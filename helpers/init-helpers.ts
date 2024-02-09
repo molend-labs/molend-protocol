@@ -159,20 +159,9 @@ export const initReservesByHelper = async (
   console.log(`- Reserves initialization in ${chunkedInitInputParams.length} txs`);
   for (let chunkIndex = 0; chunkIndex < chunkedInitInputParams.length; chunkIndex++) {
     try {
-      console.log('cp1', chunkIndex);
-      console.log('configurator', configurator.address);
-      console.log('init params');
-      console.log(chunkedInitInputParams[chunkIndex]);
-      const tx = await configurator
-        .connect(signer)
-        .batchInitReserve(chunkedInitInputParams[chunkIndex]);
-      console.log('cp2');
-      const tx3 = await waitForTx(tx);
-      console.log('cp3');
-      // const tx3 = await waitForTx(
-      //   await configurator.batchInitReserve(chunkedInitInputParams[chunkIndex])
-      // );
-
+      const tx3 = await waitForTx(
+        await configurator.batchInitReserve(chunkedInitInputParams[chunkIndex])
+      );
       console.log(`  - Reserve ready for: ${chunkedSymbols[chunkIndex].join(', ')}`);
       console.log('    * gasUsed', tx3.gasUsed.toString());
     } catch (e) {
