@@ -5,7 +5,7 @@ import { waitForTx } from '../../helpers/misc-utils';
 import { LendingPool, UiPoolDataProvider } from '../../types';
 
 const GWEI = 1000 * 1000 * 1000;
-const gasPrice = 0 * GWEI;
+const gasPrice = 1 * GWEI;
 
 const amount = (a: string) => {
   return ethers.utils.parseUnits(a);

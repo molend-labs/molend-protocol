@@ -21,19 +21,16 @@ task('dev:info', 'Show user and reserve info').setAction(async ({}, localBRE) =>
   console.log(`Signer 0 addr: ${await signer0.getAddress()}`);
   console.log(`Signer 1 addr: ${await signer1.getAddress()}`);
 
-  const reservesList = await pool.getReservesList();
-  console.log('reservesList', reservesList);
 
   const poolConfig = loadPoolConfig(ConfigNames.Mode);
   const { ReserveAssets } = poolConfig as ICommonConfiguration;
   const reserveAssets = await getParamPerNetwork(ReserveAssets, eModeNetwork.mode);
-  console.log('assets');
-  console.log(reserveAssets);
   const tokenMap = {};
   for (const symbol of Object.keys(reserveAssets)) {
     tokenMap[reserveAssets[symbol].toLowerCase()] = symbol;
   }
 
+  const reservesList = await pool.getReservesList();
   for (const reserve of reservesList) {
     const reserveData = await pool.getReserveData(reserve);
     console.log(`\nReserve Data: ${tokenMap[reserve.toLowerCase()] || 'WETH'}`);
@@ -43,8 +40,6 @@ task('dev:info', 'Show user and reserve info').setAction(async ({}, localBRE) =>
   }
 
   const userAccount = await pool.getUserAccountData(await signer1.getAddress());
-  console.log('\nuser account data OK');
-  console.log(userAccount);
   console.log('totalCollateralETH', userAccount.totalCollateralETH.toString());
   console.log('availableBorrowsETH', userAccount.availableBorrowsETH.toString());
 

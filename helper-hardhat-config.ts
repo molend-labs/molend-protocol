@@ -58,7 +58,7 @@ export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
   [eAvalancheNetwork.fuji]: 'https://api.avax-test.network/ext/bc/C/rpc',
   // [eModeNetwork.mode]: 'http://159.223.90.123:8545',
   // [eModeNetwork.mode]: 'https://testnet.mode.dev/',
-  [eModeNetwork.mode]: 'https://mainnet.mode.dev/5eZVevhGw6jT8N8nuXZF14NzfWPibWozE2oNa6Phpbio'
+  [eModeNetwork.mode]: 'https://sepolia.mode.network',
 };
 
 export const NETWORKS_DEFAULT_GAS: iParamsPerNetwork<number> = {
@@ -75,7 +75,7 @@ export const NETWORKS_DEFAULT_GAS: iParamsPerNetwork<number> = {
   [eAvalancheNetwork.avalanche]: 225 * GWEI,
   [eAvalancheNetwork.fuji]: 85 * GWEI,
   // [eModeNetwork.mode]: 10 * GWEI,
-  [eModeNetwork.mode]: 0 * GWEI,
+  [eModeNetwork.mode]: 1 * GWEI,
 };
 
 export const BLOCK_TO_FORK: iParamsPerNetwork<number | undefined> = {
