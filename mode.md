@@ -5,14 +5,14 @@
 ### A. Prerequisite 
 The following components are required by AAVE, but not handled by this project.      
 
-1. Price Oracles (optional)
-  https://github.com/molend-labs/price-oracle              
+1. Deploy Pyth Oracle Adaptors for All Assets
+  https://github.com/molend-labs/pyth-adaptor
   See readme for instructions.
+  *This only needs to be done once.*
 
-2. Run Price Oracle Nodes (optional)        
-  Update `appconfig.js` with oracle addresses above     
-  https://github.com/molend-labs/oracle-provider-node       
-  run: `npm run start`
+2. Run Price Oracle Nodes
+  https://github.com/molend-labs/pyth-crosschain
+  Follow the instructions in `price_pusher/mode.md`
 
 3. Deploy AaveCollector
    `npx hardhat --network mode dev:collector`      
