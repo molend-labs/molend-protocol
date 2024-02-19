@@ -30,3 +30,12 @@ The following components are required by AAVE, but not handled by this project.
 9. Go to incentives controller and run `npx hardhat --network mode config-assets --proxy <inc_ctrl_addr>`
 10. In order to use the protocol, the pool need to be unpaused:    
   `npx hardhat --network mode dev:unpause`
+
+## Add New Asset
+1. Add asset address in `markets/mode/index.ts`
+2. Deploy a new pyth oracle adaptor from: https://github.com/molend-labs/pyth-adaptor
+3. Put oracle address in `markets/mode/commons.ts`
+4. Set oracle source by `npx hardhat --network mode dev:set-source --asset --source`
+5. Define asset reserve config in `markets/mode/reservesConfigs.ts`
+6. Define asset rate strategy in `markets/mode/rateStrategies.ts`
+7. Run `npx hardhat --network mode dev:new-asset --pool Mode --asset WBTC`
