@@ -6,6 +6,7 @@ import {
   getLendingPool,
   getLendingPoolAddressesProvider,
   getSigner,
+  getUiPoolDataProvider,
   getWETHGateway,
 } from '../../helpers/contracts-getters';
 import { getParamPerNetwork } from '../../helpers/contracts-helpers';
@@ -38,6 +39,12 @@ task('dev:info', 'Show user and reserve info').setAction(async ({}, localBRE) =>
     console.log(`aToken address: ${reserveData.aTokenAddress}`);
     console.log(`vToken address: ${reserveData.variableDebtTokenAddress}`);
   }
+  console.log();
+
+  const uiProvider = await getUiPoolDataProvider();
+  const addressProvider = await getLendingPoolAddressesProvider();
+  const reservesData = await uiProvider.getReservesData(addressProvider.address);
+  console.log(reservesData);
 
   const userAccount = await pool.getUserAccountData(await signer1.getAddress());
   console.log('totalCollateralETH', userAccount.totalCollateralETH.toString());

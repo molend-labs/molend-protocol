@@ -24,6 +24,7 @@ task("dev:new-asset", "Add new asset to protocol")
       WethGateway,
       IncentivesController,
     } = poolConfig as ICommonConfiguration;
+    const reserveConfigs = {[asset]: ReservesConfig[asset]};
 
     const reserveAssets = await getParamPerNetwork(ReserveAssets, network);
     const assetAddress = reserveAssets[asset];
@@ -37,7 +38,7 @@ task("dev:new-asset", "Add new asset to protocol")
     const incentivesController = await getParamPerNetwork(IncentivesController, network);
 
     await initReservesByHelper(
-      ReservesConfig,
+      reserveConfigs,
       { [asset]: assetAddress },
       ATokenNamePrefix,
       StableDebtTokenNamePrefix,
@@ -52,6 +53,6 @@ task("dev:new-asset", "Add new asset to protocol")
     console.log(`Reserves ${asset} initialized`);
 
     const testHelpers = await getAaveProtocolDataProvider();
-    await configureReservesByHelper(ReservesConfig, reserveAssets, testHelpers, admin);
+    await configureReservesByHelper(reserveConfigs, { [asset]: assetAddress }, testHelpers, admin);
     console.log(`Reserves ${asset} configured`);
   });

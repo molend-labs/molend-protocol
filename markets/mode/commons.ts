@@ -115,9 +115,10 @@ export const CommonsConfig: ICommonConfiguration = {
   ChainlinkAggregator: {
     [eModeNetwork.mode]: {
       USDT: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
+      USDC: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
       USD: '0x5608649D5bB1d444e95fcc81D570fbE8495CC179',
       WETH: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
-      WBTC: '0x7137eED2976c88dE34d378928707e5aF977FdE4F',
+      WSTETH: '0xF0dd0e7208db917121FC3B18315602a3cA120Fe8',
     },
   },
   ReserveAssets: {
