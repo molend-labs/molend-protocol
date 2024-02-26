@@ -5,14 +5,14 @@
 ### A. Prerequisite 
 The following components are required by AAVE, but not handled by this project.      
 
-1. Price Oracles (optional)
-  https://github.com/molend-labs/price-oracle              
+1. Deploy Pyth Oracle Adaptors for All Assets
+  https://github.com/molend-labs/pyth-adaptor
   See readme for instructions.
+  *This only needs to be done once.*
 
-2. Run Price Oracle Nodes (optional)        
-  Update `appconfig.js` with oracle addresses above     
-  https://github.com/molend-labs/oracle-provider-node       
-  run: `npm run start`
+2. Run Price Oracle Nodes
+  https://github.com/molend-labs/pyth-crosschain
+  Follow the instructions in `price_pusher/mode.md`
 
 3. Deploy AaveCollector
    `npx hardhat --network mode dev:collector`      
@@ -30,3 +30,12 @@ The following components are required by AAVE, but not handled by this project.
 9. Go to incentives controller and run `npx hardhat --network mode config-assets --proxy <inc_ctrl_addr>`
 10. In order to use the protocol, the pool need to be unpaused:    
   `npx hardhat --network mode dev:unpause`
+
+## Add New Asset
+1. Add asset address in `markets/mode/index.ts`
+2. Deploy a new pyth oracle adaptor from: https://github.com/molend-labs/pyth-adaptor
+3. Put oracle address in `markets/mode/commons.ts`
+4. Set oracle source by `npx hardhat --network mode dev:set-source --asset --source`
+5. Define asset reserve config in `markets/mode/reservesConfigs.ts`
+6. Define asset rate strategy in `markets/mode/rateStrategies.ts`
+7. Run `npx hardhat --network mode dev:new-asset --pool Mode --asset WBTC`

@@ -560,7 +560,7 @@ export const deployWETHGateway = async (args: [tEthereumAddress], verify?: boole
   );
 
 const GWEI = 1000 * 1000 * 1000;
-const gasPrice = 0 * GWEI; // TODO mode
+const gasPrice = 1 * GWEI; // TODO mode
 
 export const authorizeWETHGateway = async (
   wethGateWay: tEthereumAddress,

@@ -1,8 +1,8 @@
 import { task } from 'hardhat/config';
 import { eEthereumNetwork } from '../../helpers/types';
 import { getTreasuryAddress } from '../../helpers/configuration';
-import * as marketConfigs from '../../markets/aave';
-import * as reserveConfigs from '../../markets/aave/reservesConfigs';
+import * as marketConfigs from '../../markets/mode';
+import * as reserveConfigs from '../../markets/mode/reservesConfigs';
 import { getLendingPoolAddressesProvider } from './../../helpers/contracts-getters';
 import {
   chooseATokenDeployment,
@@ -16,12 +16,13 @@ import { ZERO_ADDRESS } from './../../helpers/constants';
 const LENDING_POOL_ADDRESS_PROVIDER = {
   main: '0xb53c1a33016b2dc2ff3653530bff1848a515c8c5',
   kovan: '0x652B2937Efd0B5beA1c8d54293FC1289672AFC6b',
+  move: '0xd301527b1000154C46EEf3E20768D18580A1E8a4',
 };
 
 const isSymbolValid = (symbol: string, network: eEthereumNetwork) =>
   Object.keys(reserveConfigs).includes('strategy' + symbol) &&
-  marketConfigs.AaveConfig.ReserveAssets[network][symbol] &&
-  marketConfigs.AaveConfig.ReservesConfig[symbol] === reserveConfigs['strategy' + symbol];
+  marketConfigs.ModeConfig.ReserveAssets[network][symbol] &&
+  marketConfigs.ModeConfig.ReservesConfig[symbol] === reserveConfigs['strategy' + symbol];
 
 task('external:deploy-new-asset', 'Deploy A token, Debt Tokens, Risk Parameters')
   .addParam('symbol', `Asset symbol, needs to have configuration ready`)
@@ -41,7 +42,7 @@ WRONG RESERVE ASSET SETUP:
     setDRE(localBRE);
     const strategyParams = reserveConfigs['strategy' + symbol];
     const reserveAssetAddress =
-      marketConfigs.AaveConfig.ReserveAssets[localBRE.network.name][symbol];
+      marketConfigs.ModeConfig.ReserveAssets[localBRE.network.name][symbol];
     const deployCustomAToken = chooseATokenDeployment(strategyParams.aTokenImpl);
     const addressProvider = await getLendingPoolAddressesProvider(
       LENDING_POOL_ADDRESS_PROVIDER[network]
@@ -53,7 +54,7 @@ WRONG RESERVE ASSET SETUP:
         poolAddress,
         reserveAssetAddress,
         ZERO_ADDRESS, // Incentives Controller
-        `Aave stable debt bearing ${symbol}`,
+        `Molend stable debt bearing ${symbol}`,
         `stableDebt${symbol}`,
       ],
       verify
@@ -63,7 +64,7 @@ WRONG RESERVE ASSET SETUP:
         poolAddress,
         reserveAssetAddress,
         ZERO_ADDRESS, // Incentives Controller
-        `Aave variable debt bearing ${symbol}`,
+        `Molend variable debt bearing ${symbol}`,
         `variableDebt${symbol}`,
       ],
       verify

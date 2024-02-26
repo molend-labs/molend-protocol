@@ -114,12 +114,10 @@ export const CommonsConfig: ICommonConfiguration = {
   // TODO mode
   ChainlinkAggregator: {
     [eModeNetwork.mode]: {
-      DAI: '0x9e3C7532d9E4bfF3298a132101Bcc62576D80e36',
-      USDC: '0xdD170e697d7ADed472a9284f07576c3449284502',
-      USDT: '0x55b9eD56737B161677dC5146873E643647Ba5a43',
-      WBTC: '0xBE46e430d336fC827d096Db044cBaEECE72e17bC',
-      USD: '0x55b9eD56737B161677dC5146873E643647Ba5a43',
-      WETH: '0x842AF8074Fa41583E3720821cF1435049cf93565',
+      USDT: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
+      USD: '0x5608649D5bB1d444e95fcc81D570fbE8495CC179',
+      WETH: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
+      WBTC: '0x7137eED2976c88dE34d378928707e5aF977FdE4F',
     },
   },
   ReserveAssets: {
@@ -131,19 +129,19 @@ export const CommonsConfig: ICommonConfiguration = {
   },
   // TODO mode
   WETH: {
-    [eModeNetwork.mode]: '0xB8AD40DCfc163694F981D2e12704C0a7af9387DF',
+    [eModeNetwork.mode]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
     // [ePolygonNetwork.matic]: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
   },
   // TODO mode
   WrappedNativeToken: {
-    [eModeNetwork.mode]: '0xB8AD40DCfc163694F981D2e12704C0a7af9387DF',
+    [eModeNetwork.mode]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
   },
   // TODO mode
   ReserveFactorTreasuryAddress: {
-    [eModeNetwork.mode]: '0xa3Ea05d9B4f75197D8c575D2B037E7E5e0119e5D',
+    [eModeNetwork.mode]: '0x368fd26b1d435bcC2e0E1c1160B63ED7dBCabdd5',
   },
   // TODO mode
   IncentivesController: {
-    [eModeNetwork.mode]: '0xBEcadc942F1D8f70B1609F401C435768983EC7c9',
+    [eModeNetwork.mode]: '0x0000000000000000000000000000000000000000',
   },
 };
