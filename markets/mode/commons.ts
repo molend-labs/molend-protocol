@@ -17,7 +17,7 @@ export const CommonsConfig: ICommonConfiguration = {
   ATokenNamePrefix: 'Molend Mode Market',
   StableDebtTokenNamePrefix: 'Molend Mode Market stable debt',
   VariableDebtTokenNamePrefix: 'Molend Mode Market variable debt',
-  SymbolPrefix: 'p',
+  SymbolPrefix: 'm',
   ProviderId: 0, // Overriden in index.ts
   OracleQuoteCurrency: 'USD',
   OracleQuoteUnit: oneEther.toString(),
