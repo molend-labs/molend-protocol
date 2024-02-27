@@ -15,7 +15,8 @@ The following components are required by AAVE, but not handled by this project.
   Follow the instructions in `price_pusher/mode.md`
 
 3. Deploy AaveCollector
-   `npx hardhat --network mode dev:collector`      
+   https://github.com/molend-labs/molend-collector/tree/main
+   Follow the instructions in `README.md`
 
 ### B. Deploy Molend
 1. Update IncentivesController address in `markets/mode/commons.ts` with `0x0`
