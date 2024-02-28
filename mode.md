@@ -40,3 +40,7 @@ The following components are required by AAVE, but not handled by this project.
 5. Define asset reserve config in `markets/mode/reservesConfigs.ts`
 6. Define asset rate strategy in `markets/mode/rateStrategies.ts`
 7. Run `npx hardhat --network mode dev:new-asset --pool Mode --asset WBTC`
+
+## Update asset params
+1. Update asset params in `markets/mode/reservesConfigs.ts` and `markets/mode/rateStrategies.ts`
+2. Run `npx hardhat --network mode dev:update-asset --pool Mode --asset USDC`

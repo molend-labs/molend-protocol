@@ -10,14 +10,14 @@ import {
 
 export const strategyUSDC: IReserveParams = {
   strategy: rateStrategyUSDC,
-  baseLTVAsCollateral: '8500',
-  liquidationThreshold: '9000',
-  liquidationBonus: '11000',
+  baseLTVAsCollateral: '8000',
+  liquidationThreshold: '8500',
+  liquidationBonus: '11500',
   borrowingEnabled: true,
   stableBorrowRateEnabled: false,
   reserveDecimals: '6',
   aTokenImpl: eContractid.AToken,
-  reserveFactor: '1500',
+  reserveFactor: '6500',
 };
 
 export const strategyUSDT: IReserveParams = {
