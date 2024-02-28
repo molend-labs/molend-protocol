@@ -1,4 +1,6 @@
 .env
+.DS_Store
+
 #Buidler files
 cache
 artifacts
