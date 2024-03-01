@@ -62,7 +62,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
 
       console.log;
       // Proxy Stable Debt
-      console.log(`\n- Verifying Stable Debt Token proxy...\n`);
+      console.log(`\n-- Verifying Stable Debt Token proxy for ${token}...\n`);
       await verifyContract(
         eContractid.InitializableAdminUpgradeabilityProxy,
         await getProxy(stableDebtTokenAddress),
@@ -70,7 +70,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
       );
 
       // Proxy Variable Debt
-      console.log(`\n- Verifying  Debt Token proxy...\n`);
+      console.log(`\n-- Verifying  Debt Token proxy for ${token}...\n`);
       await verifyContract(
         eContractid.InitializableAdminUpgradeabilityProxy,
         await getProxy(variableDebtTokenAddress),
@@ -78,7 +78,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
       );
 
       // Proxy aToken
-      console.log('\n- Verifying aToken proxy...\n');
+      console.log(`\n-- Verifying aToken proxy for ${token}...\n`);
       await verifyContract(
         eContractid.InitializableAdminUpgradeabilityProxy,
         await getProxy(aTokenAddress),
@@ -86,7 +86,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
       );
 
       // Strategy Rate
-      console.log(`\n- Verifying Strategy rate...\n`);
+      console.log(`\n-- Verifying Strategy rate for ${token}...\n`);
       await verifyContract(
         eContractid.DefaultReserveInterestRateStrategy,
         await getInterestRateStrategy(interestRateStrategyAddress),
@@ -106,7 +106,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
       const aToken = await getAddressById(`a${token}`);
 
       if (aToken) {
-        console.log('\n- Verifying aToken...\n');
+        console.log(`\n-- Verifying aToken for ${token}...\n`);
         await verifyContract(eContractid.AToken, await getAToken(aToken), [
           lendingPoolProxy.address,
           tokenAddress,
@@ -119,7 +119,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
         console.error(`Skipping aToken verify for ${token}. Missing address at JSON DB.`);
       }
       if (stableDebt) {
-        console.log('\n- Verifying StableDebtToken...\n');
+        console.log(`\n-- Verifying StableDebtToken for ${token}...\n`);
         await verifyContract(eContractid.StableDebtToken, await getStableDebtToken(stableDebt), [
           lendingPoolProxy.address,
           tokenAddress,
@@ -131,7 +131,7 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
         console.error(`Skipping stable debt verify for ${token}. Missing address at JSON DB.`);
       }
       if (variableDebt) {
-        console.log('\n- Verifying VariableDebtToken...\n');
+        console.log(`\n-- Verifying VariableDebtToken for ${token}...\n`);
         await verifyContract(
           eContractid.VariableDebtToken,
           await getVariableDebtToken(variableDebt),
