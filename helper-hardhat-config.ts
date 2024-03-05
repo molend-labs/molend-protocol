@@ -56,9 +56,8 @@ export const NETWORKS_RPC_URL: iParamsPerNetwork<string> = {
   [eXDaiNetwork.xdai]: 'https://rpc.xdaichain.com/',
   [eAvalancheNetwork.avalanche]: 'https://api.avax.network/ext/bc/C/rpc',
   [eAvalancheNetwork.fuji]: 'https://api.avax-test.network/ext/bc/C/rpc',
-  // [eModeNetwork.mode]: 'http://159.223.90.123:8545',
-  // [eModeNetwork.mode]: 'https://testnet.mode.dev/',
-  [eModeNetwork.mode]: 'https://sepolia.mode.network',
+  [eModeNetwork.mode]: 'https://mainnet.mode.network/',
+  // [eModeNetwork.mode]: 'https://sepolia.mode.network',
 };
 
 export const NETWORKS_DEFAULT_GAS: iParamsPerNetwork<number> = {
