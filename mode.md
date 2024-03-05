@@ -15,7 +15,8 @@ The following components are required by AAVE, but not handled by this project.
   Follow the instructions in `price_pusher/mode.md`
 
 3. Deploy AaveCollector
-   `npx hardhat --network mode dev:collector`      
+   https://github.com/molend-labs/molend-collector/tree/main
+   Follow the instructions in `README.md`
 
 ### B. Deploy Molend
 1. Update IncentivesController address in `markets/mode/commons.ts` with `0x0`
@@ -39,3 +40,7 @@ The following components are required by AAVE, but not handled by this project.
 5. Define asset reserve config in `markets/mode/reservesConfigs.ts`
 6. Define asset rate strategy in `markets/mode/rateStrategies.ts`
 7. Run `npx hardhat --network mode dev:new-asset --pool Mode --asset WBTC`
+
+## Update asset params
+1. Update asset params in `markets/mode/reservesConfigs.ts` and `markets/mode/rateStrategies.ts`
+2. Run `npx hardhat --network mode dev:update-asset --pool Mode --asset USDC`

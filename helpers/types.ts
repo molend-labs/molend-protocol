@@ -263,6 +263,7 @@ export interface iAssetBase<T> {
   STAKE: T;
   xSUSHI: T;
   WAVAX: T;
+  WSTETH?: T;
 }
 
 export type iAssetsWithoutETH<T> = Omit<iAssetBase<T>, 'ETH'>;
@@ -292,31 +293,28 @@ export type iAavePoolAssets<T> = Pick<
   | 'REN'
   | 'ENJ'
   | 'xSUSHI'
+  // | 'WSTETH'
 >;
 
 export type iLpPoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  | 'DAI'
-  | 'USDC'
-  | 'USDT'
-  | 'WBTC'
-  | 'WETH'
-  | 'UniDAIWETH'
-  | 'UniWBTCWETH'
-  | 'UniAAVEWETH'
-  | 'UniBATWETH'
-  | 'UniDAIUSDC'
-  | 'UniCRVWETH'
-  | 'UniLINKWETH'
-  | 'UniMKRWETH'
-  | 'UniRENWETH'
-  | 'UniSNXWETH'
-  | 'UniUNIWETH'
-  | 'UniUSDCWETH'
-  | 'UniWBTCUSDC'
-  | 'UniYFIWETH'
-  | 'BptWBTCWETH'
-  | 'BptBALWETH'
+  'DAI' | 'USDC' | 'USDT' | 'WBTC' | 'WETH'
+  // | 'UniDAIWETH'
+  // | 'UniWBTCWETH'
+  // | 'UniAAVEWETH'
+  // | 'UniBATWETH'
+  // | 'UniDAIUSDC'
+  // | 'UniCRVWETH'
+  // | 'UniLINKWETH'
+  // | 'UniMKRWETH'
+  // | 'UniRENWETH'
+  // | 'UniSNXWETH'
+  // | 'UniUNIWETH'
+  // | 'UniUSDCWETH'
+  // | 'UniWBTCUSDC'
+  // | 'UniYFIWETH'
+  // | 'BptWBTCWETH'
+  // | 'BptBALWETH'
 >;
 
 export type iMaticPoolAssets<T> = Pick<
@@ -334,10 +332,7 @@ export type iAvalanchePoolAssets<T> = Pick<
   'WETH' | 'DAI' | 'USDT' | 'WBTC' | 'USDC'
 >;
 
-export type iModePoolAssets<T> = Pick<
-  iAssetsWithoutUSD<T>,
-  'WETH' | 'DAI' | 'USDT' | 'WBTC' | 'USDC'
->;
+export type iModePoolAssets<T> = Pick<iAssetsWithoutUSD<T>, 'WETH' | 'USDC' | 'USDT' | 'WSTETH'>;
 
 export type iMultiPoolsAssets<T> = iAssetCommon<T> | iAavePoolAssets<T>;
 

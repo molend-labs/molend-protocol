@@ -10,11 +10,11 @@ const fatalErrors = [
   `The constructor for`,
 ];
 
-const okErrors = [`Contract source code already verified`];
+const okErrors = [`Contract source code already verified`, `Smart-contract already verified`];
 
 const unableVerifyError = 'Fail - Unable to verify';
 
-export const SUPPORTED_ETHERSCAN_NETWORKS = ['main', 'ropsten', 'kovan'];
+export const SUPPORTED_ETHERSCAN_NETWORKS = ['main', 'ropsten', 'kovan', 'mode'];
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
