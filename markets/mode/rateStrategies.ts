@@ -34,25 +34,3 @@ export const rateStrategyWETH: IInterestRateStrategyParams = {
   stableRateSlope1: '0',
   stableRateSlope2: '0',
 };
-
-// WSTETH
-export const rateStrategyWSTETH: IInterestRateStrategyParams = {
-  name: "rateStrategyWSTETH",
-  optimalUtilizationRate: new BigNumber(0.3).multipliedBy(oneRay).toFixed(),
-  baseVariableBorrowRate: new BigNumber(0).multipliedBy(oneRay).toFixed(),
-  variableRateSlope1: new BigNumber(0.2).multipliedBy(oneRay).toFixed(),
-  variableRateSlope2: new BigNumber(1.1).multipliedBy(oneRay).toFixed(),
-  stableRateSlope1: '0',
-  stableRateSlope2: '0',
-};
-
-// USDC USDT
-export const rateStrategyStableThree: IInterestRateStrategyParams = {
-  name: "rateStrategyStableThree",
-  optimalUtilizationRate: new BigNumber(0.9).multipliedBy(oneRay).toFixed(),
-  baseVariableBorrowRate: new BigNumber(0).multipliedBy(oneRay).toFixed(),
-  variableRateSlope1: new BigNumber(0.04).multipliedBy(oneRay).toFixed(),
-  variableRateSlope2: new BigNumber(0.60).multipliedBy(oneRay).toFixed(),
-  stableRateSlope1: new BigNumber(0.02).multipliedBy(oneRay).toFixed(),
-  stableRateSlope2: new BigNumber(0.60).multipliedBy(oneRay).toFixed(),
-}

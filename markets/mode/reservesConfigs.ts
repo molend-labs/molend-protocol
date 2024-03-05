@@ -43,15 +43,3 @@ export const strategyWETH: IReserveParams = {
   aTokenImpl: eContractid.AToken,
   reserveFactor: '6500',
 };
-
-export const strategyWSTETH: IReserveParams = {
-  strategy: rateStrategyWSTETH,
-  baseLTVAsCollateral: '6500',
-  liquidationThreshold: '7000',
-  liquidationBonus: '11500',
-  borrowingEnabled: true,
-  stableBorrowRateEnabled: false,
-  reserveDecimals: '18',
-  aTokenImpl: eContractid.AToken,
-  reserveFactor: '6500',
-};
