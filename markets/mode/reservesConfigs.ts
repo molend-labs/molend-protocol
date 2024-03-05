@@ -5,7 +5,6 @@ import {
   rateStrategyWETH,
   rateStrategyUSDC,
   rateStrategyUSDT,
-  rateStrategyWSTETH,
 } from './rateStrategies';
 
 export const strategyUSDC: IReserveParams = {

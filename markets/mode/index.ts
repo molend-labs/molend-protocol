@@ -5,7 +5,6 @@ import {
   strategyUSDC,
   strategyUSDT,
   strategyWETH,
-  strategyWSTETH,
 } from './reservesConfigs';
 
 // ----------------
@@ -20,7 +19,6 @@ export const ModeConfig: IModeConfiguration = {
     USDC: strategyUSDC,
     USDT: strategyUSDT,
     WETH: strategyWETH,
-    WSTETH: strategyWSTETH,
   },
   // TODO mode
   ReserveAssets: {
