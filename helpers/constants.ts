@@ -85,7 +85,7 @@ export const chainlinkAggregatorProxy = {
   fuji: '0x5498BB86BC934c8D34FDA08E81D444153d0D06aD',
   tenderly: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
   // TODO ETH oracle
-  mode: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
+  mode: '0x5290b68e09b4f79F63ed01710003E7949FB32B77',
   hardhat: '0x',
 };
 
@@ -98,6 +98,6 @@ export const chainlinkEthUsdAggregatorProxy = {
   fuji: '0x86d67c3D38D2bCeE722E601025C25a575021c6EA',
   tenderly: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
   // TODO ETH oracle
-  mode: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
+  mode: '0x5290b68e09b4f79F63ed01710003E7949FB32B77',
   hardhat: '0x',
 };

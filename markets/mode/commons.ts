@@ -114,11 +114,10 @@ export const CommonsConfig: ICommonConfiguration = {
   // TODO mode
   ChainlinkAggregator: {
     [eModeNetwork.mode]: {
-      USDT: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
-      USDC: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
-      USD: '0x5608649D5bB1d444e95fcc81D570fbE8495CC179',
-      WETH: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
-      WSTETH: '0xF0dd0e7208db917121FC3B18315602a3cA120Fe8',
+      USDT: '0x86592C8141Aec8f7B836f4559614233b253c55F1',
+      USDC: '0xfb6D1C2e9cbFCf6190F30D1766935f3B0057305b',
+      USD: '0x86592C8141Aec8f7B836f4559614233b253c55F1',
+      WETH: '0x5290b68e09b4f79F63ed01710003E7949FB32B77',
     },
   },
   ReserveAssets: {
@@ -130,16 +129,15 @@ export const CommonsConfig: ICommonConfiguration = {
   },
   // TODO mode
   WETH: {
-    [eModeNetwork.mode]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
-    // [ePolygonNetwork.matic]: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
+    [eModeNetwork.mode]: '0x4200000000000000000000000000000000000006',
   },
   // TODO mode
   WrappedNativeToken: {
-    [eModeNetwork.mode]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
+    [eModeNetwork.mode]: '0x4200000000000000000000000000000000000006',
   },
   // TODO mode
   ReserveFactorTreasuryAddress: {
-    [eModeNetwork.mode]: '0x368fd26b1d435bcC2e0E1c1160B63ED7dBCabdd5',
+    [eModeNetwork.mode]: '0xCaFDdA4DB4a42C0Fd77C58fdaA28860849124fa2',
   },
   // TODO mode
   IncentivesController: {
