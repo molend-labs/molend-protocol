@@ -1,16 +1,16 @@
-import { task } from "hardhat/config";
-import { getLendingPool, getMintableERC20, getSigner } from "../../helpers/contracts-getters";
-import { waitForTx } from "../../helpers/misc-utils";
+import { task } from 'hardhat/config';
+import { getLendingPool, getMintableERC20, getSigner } from '../../helpers/contracts-getters';
+import { waitForTx } from '../../helpers/misc-utils';
 
 const GWEI = 1000 * 1000 * 1000;
 const gasPrice = 1 * GWEI;
 
-task("dev:smoke", "Smoke test (deposit, borrow, repay)")
-  .addParam("token")
-  .addParam("deposit")
-  .addParam("borrow")
+task('dev:smoke', 'Smoke test (deposit, borrow, repay)')
+  .addParam('token')
+  .addParam('deposit', 'Deposit amount in full decimals')
+  .addParam('borrow', 'Borrow amount in full decimals')
   .setAction(async ({ token, deposit, borrow }, localBRE) => {
-    await localBRE.run("set-DRE");
+    await localBRE.run('set-DRE');
 
     const user = await getSigner(0);
     const userAddress = await user.getAddress();
@@ -20,9 +20,7 @@ task("dev:smoke", "Smoke test (deposit, borrow, repay)")
     console.log(`User ${userAddress}, pool ${lendingPool.address}`);
 
     // deposit
-    await waitForTx(
-      await erc20.connect(user).approve(lendingPool.address, deposit)
-    );
+    await waitForTx(await erc20.connect(user).approve(lendingPool.address, deposit));
     await waitForTx(
       await lendingPool.connect(user).deposit(token, deposit, userAddress, 0, {
         gasLimit: 1000000,
@@ -45,5 +43,17 @@ task("dev:smoke", "Smoke test (deposit, borrow, repay)")
         }
       )
     );
-    console.log("User borrowed");
+    console.log('User borrowed');
+
+    // repay
+    await waitForTx(await erc20.connect(user).approve(lendingPool.address, borrow));
+    await waitForTx(
+      await lendingPool.connect(user).repay(
+        token,
+        borrow,
+        2, // interest mode
+        await user.getAddress()
+      )
+    );
+    console.log('User repaid');
   });

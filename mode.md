@@ -27,9 +27,7 @@ The following components are required by AAVE, but not handled by this project.
 5. Update WETH address in `markets/mode/commons.ts`
 6. Delete all entries in `deployed-contracts.json`, if mock tokens are needed you can leave these entries there.
 7. `npm run mode:full:migration`
-8. Grab aToken and vToken address from `npx hardhat --network mode dev:info`, put into IncentivesController `config-incentives.ts`.
-9. Go to incentives controller and run `npx hardhat --network mode config-assets --proxy <inc_ctrl_addr>`
-10. In order to use the protocol, the pool need to be unpaused:    
+8. In order to use the protocol, the pool need to be unpaused:    
   `npx hardhat --network mode dev:unpause`
 
 ## Add New Asset
