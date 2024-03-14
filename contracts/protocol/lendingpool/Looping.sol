@@ -76,6 +76,8 @@ contract Looping is IFlashLoanReceiver {
     return true;
   }
 
+  // One click loop
+  // Before call loop, user should approve (principal + falshloan premium) asset to this contract
   function loop(
     address asset,
     uint256 principal,
