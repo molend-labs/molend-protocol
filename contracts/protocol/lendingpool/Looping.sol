@@ -7,6 +7,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ILendingPool} from '../../interfaces/ILendingPool.sol';
 import {ILendingPoolAddressesProvider} from '../../interfaces/ILendingPoolAddressesProvider.sol';
 import {IFlashLoanReceiver} from "../../flashloan/interfaces/IFlashLoanReceiver.sol";
+import "./LendingPool.sol";
 
 contract Looping is IFlashLoanReceiver {
   using SafeERC20 for IERC20;
@@ -53,13 +54,18 @@ contract Looping is IFlashLoanReceiver {
 
     uint256 premuim = premiums[0];
 
+    // transfer (principal + premuim) from user to this contract
+    // now this contract owned: (borrowed + principal + premuim)
     IERC20(asset).safeTransferFrom(user, address(this), principal.add(premuim));
 
+    // deposit (borrowed + principal) to LendingPool
+    // now this contract owned: (premuim)
     uint256 deposit = borrowed.add(principal);
     IERC20(asset).safeApprove(address(LENDING_POOL), deposit);
-
     LENDING_POOL.deposit(asset, deposit, user, 0);
 
+    // borrow (borrowed) from LendingPool
+    // now this contract owned: (borrowed + premuim)
     LENDING_POOL.borrow(asset, borrowed, 2, 0, user); // TODO interestRateMode
 
     // Approve the LendingPool contract allowance to *pull* the owed amount
@@ -73,12 +79,8 @@ contract Looping is IFlashLoanReceiver {
   function loop(
     address asset,
     uint256 principal,
-    uint256 leverage
+    uint256 borrowed
   ) external {
-    require(principal > 0, "principal should grater than 0");
-
-    uint256 borrowed = principal.mul(leverage).div(LEVERAGE_MULTIPLIER).sub(principal);
-
     address[] memory assets = new address[](1);
     assets[0] = asset;
 
