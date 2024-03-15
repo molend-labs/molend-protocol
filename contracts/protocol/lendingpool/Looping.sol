@@ -7,13 +7,10 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ILendingPool} from '../../interfaces/ILendingPool.sol';
 import {ILendingPoolAddressesProvider} from '../../interfaces/ILendingPoolAddressesProvider.sol';
 import {IFlashLoanReceiver} from "../../flashloan/interfaces/IFlashLoanReceiver.sol";
-import "./LendingPool.sol";
 
 contract Looping is IFlashLoanReceiver {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
-
-  uint256 public constant LEVERAGE_MULTIPLIER = 10000;
 
   ILendingPoolAddressesProvider public immutable override ADDRESSES_PROVIDER;
   ILendingPool public immutable override LENDING_POOL;
