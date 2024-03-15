@@ -16,6 +16,7 @@ import {
   getFlashLiquidationAdapter,
   getParaSwapLiquiditySwapAdapter,
   getLooping,
+  getVariableDebtToken,
 } from '../../../helpers/contracts-getters';
 import { eEthereumNetwork, eNetwork, tEthereumAddress } from '../../../helpers/types';
 import { LendingPool } from '../../../types/LendingPool';
@@ -40,7 +41,7 @@ import { WETH9Mocked } from '../../../types/WETH9Mocked';
 import { WETHGateway } from '../../../types/WETHGateway';
 import { solidity } from 'ethereum-waffle';
 import { AaveConfig } from '../../../markets/aave';
-import { FlashLiquidationAdapter, Looping } from '../../../types';
+import { FlashLiquidationAdapter, Looping, VariableDebtToken } from '../../../types';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
 import { usingTenderly } from '../../../helpers/tenderly-utils';
 
@@ -61,8 +62,10 @@ export interface TestEnv {
   helpersContract: AaveProtocolDataProvider;
   weth: WETH9Mocked;
   aWETH: AToken;
+  vWETH: VariableDebtToken;
   dai: MintableERC20;
   aDai: AToken;
+  vDai: VariableDebtToken;
   usdc: MintableERC20;
   aave: MintableERC20;
   addressesProvider: LendingPoolAddressesProvider;
@@ -89,8 +92,10 @@ const testEnv: TestEnv = {
   oracle: {} as PriceOracle,
   weth: {} as WETH9Mocked,
   aWETH: {} as AToken,
+  vWETH: {} as VariableDebtToken,
   dai: {} as MintableERC20,
   aDai: {} as AToken,
+  vDai: {} as VariableDebtToken,
   usdc: {} as MintableERC20,
   aave: {} as MintableERC20,
   addressesProvider: {} as LendingPoolAddressesProvider,
@@ -136,22 +141,26 @@ export async function initializeMakeSuite() {
 
   const allTokens = await testEnv.helpersContract.getAllATokens();
   const aDaiAddress = allTokens.find((aToken) => aToken.symbol === 'aDAI')?.tokenAddress;
-
   const aWEthAddress = allTokens.find((aToken) => aToken.symbol === 'aWETH')?.tokenAddress;
 
-  const reservesTokens = await testEnv.helpersContract.getAllReservesTokens();
+  if (!aDaiAddress || !aWEthAddress) {
+    process.exit(1);
+  }
 
+  const reservesTokens = await testEnv.helpersContract.getAllReservesTokens();
   const daiAddress = reservesTokens.find((token) => token.symbol === 'DAI')?.tokenAddress;
   const usdcAddress = reservesTokens.find((token) => token.symbol === 'USDC')?.tokenAddress;
   const aaveAddress = reservesTokens.find((token) => token.symbol === 'AAVE')?.tokenAddress;
   const wethAddress = reservesTokens.find((token) => token.symbol === 'WETH')?.tokenAddress;
 
-  if (!aDaiAddress || !aWEthAddress) {
-    process.exit(1);
-  }
   if (!daiAddress || !usdcAddress || !aaveAddress || !wethAddress) {
     process.exit(1);
   }
+
+  const { variableDebtTokenAddress: vDaiAddress } =
+    await testEnv.helpersContract.getReserveTokensAddresses(daiAddress);
+  const { variableDebtTokenAddress: vWEthAddress } =
+    await testEnv.helpersContract.getReserveTokensAddresses(wethAddress);
 
   testEnv.aDai = await getAToken(aDaiAddress);
   testEnv.aWETH = await getAToken(aWEthAddress);
@@ -160,6 +169,10 @@ export async function initializeMakeSuite() {
   testEnv.usdc = await getMintableERC20(usdcAddress);
   testEnv.aave = await getMintableERC20(aaveAddress);
   testEnv.weth = await getWETHMocked(wethAddress);
+
+  testEnv.vDai = await getVariableDebtToken(vDaiAddress);
+  testEnv.vWETH = await getVariableDebtToken(vWEthAddress);
+
   testEnv.wethGateway = await getWETHGateway();
 
   testEnv.uniswapLiquiditySwapAdapter = await getUniswapLiquiditySwapAdapter();

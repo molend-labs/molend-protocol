@@ -8,6 +8,7 @@ import {
   HALF_PERCENTAGE,
   PERCENTAGE_FACTOR,
 } from '../../../../helpers/constants';
+import { ethers } from 'ethers';
 
 declare module 'bignumber.js' {
   interface BigNumber {
@@ -95,3 +96,17 @@ BigNumber.prototype.percentDiv = function (a: BigNumber): BigNumber {
     .div(a)
     .decimalPlaces(0, BigNumber.ROUND_DOWN);
 };
+
+export function parseAmount(
+  amount: string | number | ethers.BigNumber,
+  decimals: number
+): ethers.BigNumber {
+  return ethers.BigNumber.from(10).pow(decimals).mul(amount);
+}
+
+export function formatAmount(
+  amount: string | number | ethers.BigNumber,
+  decimals: number
+): ethers.BigNumber {
+  return ethers.BigNumber.from(10).pow(-decimals).mul(amount);
+}
