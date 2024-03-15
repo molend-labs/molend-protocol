@@ -7,6 +7,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ILendingPool} from '../../interfaces/ILendingPool.sol';
 import {ILendingPoolAddressesProvider} from '../../interfaces/ILendingPoolAddressesProvider.sol';
 import {IFlashLoanReceiver} from "../../flashloan/interfaces/IFlashLoanReceiver.sol";
+import "../../misc/interfaces/IWETH.sol";
 
 contract Looping is IFlashLoanReceiver {
   using SafeERC20 for IERC20;
@@ -14,10 +15,12 @@ contract Looping is IFlashLoanReceiver {
 
   ILendingPoolAddressesProvider public immutable override ADDRESSES_PROVIDER;
   ILendingPool public immutable override LENDING_POOL;
+  IWETH internal immutable WETH;
 
-  constructor(ILendingPoolAddressesProvider provider) public {
+  constructor(ILendingPoolAddressesProvider provider, IWETH weth) public {
     ADDRESSES_PROVIDER = provider;
     LENDING_POOL = ILendingPool(provider.getLendingPool());
+    WETH = weth;
   }
 
   /// This function is called by lending pool after your contract has received the flash loaned amount
@@ -34,11 +37,12 @@ contract Looping is IFlashLoanReceiver {
     bytes calldata params
   ) external override returns (bool) {
     (
-      address user,
+      address payable user,
       address asset,
       uint256 principal,
-      uint256 borrowed
-    ) = abi.decode(params, (address, address, uint256, uint256));
+      uint256 borrowed,
+      uint256 value
+    ) = abi.decode(params, (address, address, uint256, uint256, uint256));
 
     require(
       assets.length == 1 &&
@@ -50,10 +54,19 @@ contract Looping is IFlashLoanReceiver {
     );
 
     uint256 premuim = premiums[0];
+    uint256 principalPlusPremuim = principal.add(premuim);
 
-    // transfer (principal + premuim) from user to this contract
-    // now this contract owned: (borrowed + principal + premuim)
-    IERC20(asset).safeTransferFrom(user, address(this), principal.add(premuim));
+    if (asset == address(WETH)) {
+      require(value >= principalPlusPremuim, "Insufficient attached ETH as FlightLoan fee");
+      WETH.deposit{value: principalPlusPremuim}();
+      uint256 extra = value - principalPlusPremuim;
+      if (extra > 0) {
+        user.transfer(extra);
+      }
+    } else {
+      require(value == 0, "Don't attach any Ether");
+      IERC20(asset).safeTransferFrom(user, address(this), principalPlusPremuim);
+    }
 
     // deposit (borrowed + principal) to LendingPool
     // now this contract owned: (premuim)
@@ -79,7 +92,11 @@ contract Looping is IFlashLoanReceiver {
     address asset,
     uint256 principal,
     uint256 borrowed
-  ) external {
+  ) external payable {
+    if (asset == address(WETH)) {
+      require(msg.value >= principal, "Attached Ether should grater or equal than principal");
+    }
+
     address[] memory assets = new address[](1);
     assets[0] = asset;
 
@@ -89,7 +106,7 @@ contract Looping is IFlashLoanReceiver {
     uint256[] memory modes = new uint256[](1);
     modes[0] = 0;
 
-    bytes memory params = abi.encode(msg.sender, asset, principal, borrowed);
+    bytes memory params = abi.encode(msg.sender, asset, principal, borrowed, msg.value);
 
     LENDING_POOL.flashLoan(
       address(this),
