@@ -34,6 +34,7 @@ import {
   WETHGatewayFactory,
   FlashLiquidationAdapterFactory,
   UiPoolDataProviderFactory,
+  LoopingFactory,
 } from '../types';
 import { IERC20DetailedFactory } from '../types/IERC20DetailedFactory';
 import { getEthersSigners, MockTokenMap } from './contracts-helpers';
@@ -468,5 +469,11 @@ export const getParaSwapLiquiditySwapAdapter = async (address?: tEthereumAddress
       (
         await getDb().get(`${eContractid.ParaSwapLiquiditySwapAdapter}.${DRE.network.name}`).value()
       ).address,
+    await getFirstSigner()
+  );
+
+export const getLooping = async (address?: tEthereumAddress) =>
+  await LoopingFactory.connect(
+    address || (await getDb().get(`${eContractid.Looping}.${DRE.network.name}`).value()).address,
     await getFirstSigner()
   );
