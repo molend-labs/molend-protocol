@@ -67,6 +67,8 @@ export interface TestEnv {
   aDai: AToken;
   vDai: VariableDebtToken;
   usdc: MintableERC20;
+  aUSDC: AToken;
+  vUSDC: VariableDebtToken;
   aave: MintableERC20;
   addressesProvider: LendingPoolAddressesProvider;
   uniswapLiquiditySwapAdapter: UniswapLiquiditySwapAdapter;
@@ -97,6 +99,8 @@ const testEnv: TestEnv = {
   aDai: {} as AToken,
   vDai: {} as VariableDebtToken,
   usdc: {} as MintableERC20,
+  aUSDC: {} as AToken,
+  vUSDC: {} as VariableDebtToken,
   aave: {} as MintableERC20,
   addressesProvider: {} as LendingPoolAddressesProvider,
   uniswapLiquiditySwapAdapter: {} as UniswapLiquiditySwapAdapter,
@@ -142,8 +146,9 @@ export async function initializeMakeSuite() {
   const allTokens = await testEnv.helpersContract.getAllATokens();
   const aDaiAddress = allTokens.find((aToken) => aToken.symbol === 'aDAI')?.tokenAddress;
   const aWEthAddress = allTokens.find((aToken) => aToken.symbol === 'aWETH')?.tokenAddress;
+  const aUsdcAddress = allTokens.find((aToken) => aToken.symbol === 'aUSDC')?.tokenAddress;
 
-  if (!aDaiAddress || !aWEthAddress) {
+  if (!aDaiAddress || !aWEthAddress || !aUsdcAddress) {
     process.exit(1);
   }
 
@@ -161,9 +166,12 @@ export async function initializeMakeSuite() {
     await testEnv.helpersContract.getReserveTokensAddresses(daiAddress);
   const { variableDebtTokenAddress: vWEthAddress } =
     await testEnv.helpersContract.getReserveTokensAddresses(wethAddress);
+  const { variableDebtTokenAddress: vUSDCAddress } =
+    await testEnv.helpersContract.getReserveTokensAddresses(usdcAddress);
 
   testEnv.aDai = await getAToken(aDaiAddress);
   testEnv.aWETH = await getAToken(aWEthAddress);
+  testEnv.aUSDC = await getAToken(aUsdcAddress);
 
   testEnv.dai = await getMintableERC20(daiAddress);
   testEnv.usdc = await getMintableERC20(usdcAddress);
@@ -172,6 +180,7 @@ export async function initializeMakeSuite() {
 
   testEnv.vDai = await getVariableDebtToken(vDaiAddress);
   testEnv.vWETH = await getVariableDebtToken(vWEthAddress);
+  testEnv.vUSDC = await getVariableDebtToken(vUSDCAddress);
 
   testEnv.wethGateway = await getWETHGateway();
 

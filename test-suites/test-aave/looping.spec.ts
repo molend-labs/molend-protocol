@@ -7,23 +7,29 @@ import { PERCENTAGE_FACTOR } from '../../helpers/constants';
 
 makeSuite('Looping', (env: TestEnv) => {
   it.only('Add Liquidity', async () => {
-    const { users, helpersContract, pool, dai, aDai, weth, aWETH } = env;
+    const { users, helpersContract, pool, dai, aDai, weth, aWETH, usdc, aUSDC } = env;
     const liquidityProvider = users[0];
 
     // Liquidity provider assets
     expect(await dai.balanceOf(liquidityProvider.address)).eq(BigNumber.from(0));
     expect(await weth.balanceOf(liquidityProvider.address)).eq(BigNumber.from(0));
+    expect(await usdc.balanceOf(liquidityProvider.address)).eq(BigNumber.from(0));
 
     const daiAmount = parseUnits('10000', 18); // 10000 DAI
     const wethAmount = parseUnits('20000', 18); // 20000 WETH
+    const usdcAmount = parseUnits('30000', 6); // 30000 USDC
 
     // Assets are actually held by AToken
     expect(await dai.balanceOf(aDai.address)).eq(BigNumber.from(0));
     expect(await weth.balanceOf(aWETH.address)).eq(BigNumber.from(0));
+    expect(await usdc.balanceOf(aUSDC.address)).eq(BigNumber.from(0));
     expect((await helpersContract.getReserveData(dai.address)).availableLiquidity).eq(
       BigNumber.from(0)
     );
     expect((await helpersContract.getReserveData(weth.address)).availableLiquidity).eq(
+      BigNumber.from(0)
+    );
+    expect((await helpersContract.getReserveData(usdc.address)).availableLiquidity).eq(
       BigNumber.from(0)
     );
 
@@ -32,10 +38,13 @@ makeSuite('Looping', (env: TestEnv) => {
     await dai.connect(liquidityProvider.signer).approve(pool.address, daiAmount);
     await weth.connect(liquidityProvider.signer).mint(wethAmount);
     await weth.connect(liquidityProvider.signer).approve(pool.address, wethAmount);
+    await usdc.connect(liquidityProvider.signer).mint(usdcAmount);
+    await usdc.connect(liquidityProvider.signer).approve(pool.address, usdcAmount);
 
     // Liquidity provider assets
     expect(await dai.balanceOf(liquidityProvider.address)).eq(daiAmount);
     expect(await weth.balanceOf(liquidityProvider.address)).eq(wethAmount);
+    expect(await usdc.balanceOf(liquidityProvider.address)).eq(usdcAmount);
 
     // Deposit assets
     await pool
@@ -44,15 +53,22 @@ makeSuite('Looping', (env: TestEnv) => {
     await pool
       .connect(liquidityProvider.signer)
       .deposit(weth.address, wethAmount, liquidityProvider.address, 0);
+    await pool
+      .connect(liquidityProvider.signer)
+      .deposit(usdc.address, usdcAmount, liquidityProvider.address, 0);
 
     // Check liquidity
     expect(await dai.balanceOf(aDai.address)).eq(daiAmount);
     expect(await weth.balanceOf(aWETH.address)).eq(wethAmount);
+    expect(await usdc.balanceOf(aUSDC.address)).eq(usdcAmount);
     expect((await helpersContract.getReserveData(dai.address)).availableLiquidity).eq(
       BigNumber.from(daiAmount)
     );
     expect((await helpersContract.getReserveData(weth.address)).availableLiquidity).eq(
       BigNumber.from(wethAmount)
+    );
+    expect((await helpersContract.getReserveData(usdc.address)).availableLiquidity).eq(
+      BigNumber.from(usdcAmount)
     );
   });
 
@@ -193,6 +209,57 @@ makeSuite('Looping', (env: TestEnv) => {
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 
+  it.only('Looping USDC with max leverage with initial debt (DAI)', async () => {
+    const { users, helpersContract, looping, usdc, vUSDC } = env;
+    const user = users[2]; // user 2 has loop the DAI with max leverage
+
+    // User USDC amount
+    expect(await usdc.balanceOf(user.address)).eq(BigNumber.from(0));
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const { ltv } = await helpersContract.getReserveConfigurationData(usdc.address);
+    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
+      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
+    ); // 5x
+
+    const usdcAmount = parseUnits('600', 6); // 600 USDC
+    const principalUsdcAmount = parseUnits('500', 6); // 500 USDC
+    const borrowedUsdcAmount = principalUsdcAmount.mul(leverage.sub(1)); // 2000 USDC
+    const flashloanFeeUsdcAmount = borrowedUsdcAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Mint USDC for user
+    await usdc.connect(user.signer).mint(usdcAmount);
+    await usdc
+      .connect(user.signer)
+      .approve(looping.address, principalUsdcAmount.add(flashloanFeeUsdcAmount));
+
+    // User USDC balance
+    expect(await usdc.balanceOf(user.address)).eq(usdcAmount);
+
+    // Approval for looping contract to borrow for user
+    await vUSDC.connect(user.signer).approveDelegation(looping.address, borrowedUsdcAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(usdc.address, principalUsdcAmount, borrowedUsdcAmount);
+
+    // User remaining USDC balance after looping
+    expect(await usdc.balanceOf(user.address)).eq(
+      usdcAmount.sub(principalUsdcAmount).sub(flashloanFeeUsdcAmount)
+    );
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
+    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
+      Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
+      Number(parseUnits('0.2', 6).toString())
+    );
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
+  });
+
   it.only('Looping ETH with 3x leverage without initial debt', async () => {
     const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
     const user = users[4];
@@ -285,5 +352,56 @@ makeSuite('Looping', (env: TestEnv) => {
         value: principalWethAmount.add(flashloanFeeWethAmount),
       })
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
+  });
+
+  it.only('Looping USDC with max leverage with initial debt (ETH)', async () => {
+    const { users, helpersContract, looping, usdc, vUSDC } = env;
+    const user = users[5]; // user 5 has loop the ETH with max leverage
+
+    // User USDC amount
+    expect(await usdc.balanceOf(user.address)).eq(BigNumber.from(0));
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const { ltv } = await helpersContract.getReserveConfigurationData(usdc.address);
+    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
+      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
+    ); // 5x
+
+    const usdcAmount = parseUnits('600', 6); // 600 USDC
+    const principalUsdcAmount = parseUnits('500', 6); // 500 USDC
+    const borrowedUsdcAmount = principalUsdcAmount.mul(leverage.sub(1)); // 2000 USDC
+    const flashloanFeeUsdcAmount = borrowedUsdcAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Mint USDC for user
+    await usdc.connect(user.signer).mint(usdcAmount);
+    await usdc
+      .connect(user.signer)
+      .approve(looping.address, principalUsdcAmount.add(flashloanFeeUsdcAmount));
+
+    // User USDC balance
+    expect(await usdc.balanceOf(user.address)).eq(usdcAmount);
+
+    // Approval for looping contract to borrow for user
+    await vUSDC.connect(user.signer).approveDelegation(looping.address, borrowedUsdcAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(usdc.address, principalUsdcAmount, borrowedUsdcAmount);
+
+    // User remaining USDC balance after looping
+    expect(await usdc.balanceOf(user.address)).eq(
+      usdcAmount.sub(principalUsdcAmount).sub(flashloanFeeUsdcAmount)
+    );
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
+    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
+      Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
+      Number(parseUnits('0.2', 6).toString())
+    );
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
   });
 });
