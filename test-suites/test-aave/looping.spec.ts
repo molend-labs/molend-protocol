@@ -96,4 +96,31 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentATokenBalance).eq(BigNumber.from('1500117391304347826087')); // TODO why extra '117391304347826087'
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
+
+  it.only('Looping ETH with 3x leverage', async () => {
+    const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
+    const user = users[1];
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const principalWethAmount = parseUnits('500', 18); // 500 WETH
+    const borrowedWethAmount = parseUnits('1000', 18); // 1000 WETH
+    const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(10000);
+
+    // Approval for looping contract to borrow for user
+    await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+      value: principalWethAmount.add(flashloanFeeWethAmount),
+    });
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('1500062790697674418605')); // TODO why extra '62790697674418605'
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
+  });
 });
