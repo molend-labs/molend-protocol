@@ -94,7 +94,7 @@ makeSuite('Looping', (env: TestEnv) => {
 
     // User reserve data
     userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('1500117391304347826087')); // TODO why extra '117391304347826087'
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('1500117391304347826087'));
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
 
@@ -140,7 +140,7 @@ makeSuite('Looping', (env: TestEnv) => {
 
     // User reserve data
     userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('2000199986667547328034')); // TODO why extra '199986667547328034'
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('2000199986667547328034'));
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
 
@@ -184,7 +184,7 @@ makeSuite('Looping', (env: TestEnv) => {
 
   it.only('Looping ETH with 3x leverage', async () => {
     const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
-    const user = users[1];
+    const user = users[4];
 
     // User reserve data
     let userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
@@ -205,13 +205,13 @@ makeSuite('Looping', (env: TestEnv) => {
 
     // User reserve data
     userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('1500062790697674418605')); // TODO why extra '62790697674418605'
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('1500062790697674418605'));
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
   });
 
   it.only('Looping ETH with max leverage', async () => {
     const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
-    const user = users[2];
+    const user = users[5];
 
     // User reserve data
     let userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
@@ -223,7 +223,6 @@ makeSuite('Looping', (env: TestEnv) => {
 
     const principalWethAmount = parseUnits('500', 18); // 500 WETH
     const borrowedWethAmount = principalWethAmount.mul(leverage.sub(1)); // 2000 ETH
-    // const borrowedWethAmount = parseUnits('1999.5', 18); // 1999 ETH
     const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(10000);
 
     // Approval for looping contract to borrow for user
@@ -236,7 +235,34 @@ makeSuite('Looping', (env: TestEnv) => {
 
     // User reserve data
     userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('0'));
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from('2500187492969010826023'));
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
+  });
+
+  it.only('Looping ETH exceed max leverage', async () => {
+    const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
+    const user = users[6];
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const { ltv } = await helpersContract.getReserveConfigurationData(weth.address);
+    const leverage = BigNumber.from(10000).div(BigNumber.from(10000).sub(ltv)); // 5x
+
+    const principalWethAmount = parseUnits('500', 18); // 500 WETH
+    const borrowedWethAmount = principalWethAmount.mul(leverage.sub(1)).add(parseUnits('1', 18)); // 2001 ETH
+    const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(10000);
+
+    // Approval for looping contract to borrow for user
+    await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
+
+    // Loop
+    await expect(
+      looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+        value: principalWethAmount.add(flashloanFeeWethAmount),
+      })
+    ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 });
