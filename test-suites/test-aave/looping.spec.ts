@@ -404,4 +404,55 @@ makeSuite('Looping', (env: TestEnv) => {
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
   });
+
+  it.only('Looping DAI with max leverage with initial debt (ETH + USDC)', async () => {
+    const { users, helpersContract, looping, dai, vDai, aDai } = env;
+    const user = users[5];
+
+    // User DAI amount
+    expect(await dai.balanceOf(user.address)).eq(BigNumber.from(0));
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const { ltv } = await helpersContract.getReserveConfigurationData(dai.address);
+    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
+      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
+    ); // 4x
+
+    const daiAmount = parseUnits('600', 18); // 600 DAI
+    const principalDaiAmount = parseUnits('500', 18); // 500 DAI
+    const borrowedDaiAmount = principalDaiAmount.mul(leverage.sub(1)); // 1500 DAI
+    const flashloanFeeDaiAmount = borrowedDaiAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Mint DAI for user
+    await dai.connect(user.signer).mint(daiAmount);
+    await dai
+      .connect(user.signer)
+      .approve(looping.address, principalDaiAmount.add(flashloanFeeDaiAmount));
+
+    // User DAI balance
+    expect(await dai.balanceOf(user.address)).eq(daiAmount);
+
+    // Approval for looping contract to borrow for user
+    await vDai.connect(user.signer).approveDelegation(looping.address, borrowedDaiAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(dai.address, principalDaiAmount, borrowedDaiAmount);
+
+    // User remaining DAI balance after looping
+    expect(await dai.balanceOf(user.address)).eq(
+      daiAmount.sub(principalDaiAmount).sub(flashloanFeeDaiAmount)
+    );
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
+    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
+      Number(principalDaiAmount.add(borrowedDaiAmount).toString()),
+      Number(parseUnits('0.2', 18).toString())
+    );
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
+  });
 });
