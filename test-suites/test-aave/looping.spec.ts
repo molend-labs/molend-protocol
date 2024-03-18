@@ -119,7 +119,7 @@ makeSuite('Looping', (env: TestEnv) => {
   });
 
   it.only('(User 2) Looping DAI with max leverage without initial debt', async () => {
-    const { users, helpersContract, looping, dai, vDai } = env;
+    const { pool, users, helpersContract, looping, dai, vDai } = env;
     const user = users[2];
 
     // User DAI amount
@@ -167,10 +167,13 @@ makeSuite('Looping', (env: TestEnv) => {
       Number(parseUnits('0.2', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
+
+    const userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor:', userAccountData.healthFactor);
   });
 
   it.only('(User 2) Looping USDC with max leverage with initial debt (DAI)', async () => {
-    const { users, helpersContract, looping, usdc, vUSDC } = env;
+    const { pool, users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[2]; // user 2 has loop the DAI with max leverage
 
     // User USDC amount
@@ -218,6 +221,9 @@ makeSuite('Looping', (env: TestEnv) => {
       Number(parseUnits('0.2', 6).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
+
+    const userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor:', userAccountData.healthFactor);
   });
 
   it.only('(User 3) Looping DAI exceed max leverage without initial debt', async () => {
@@ -291,7 +297,7 @@ makeSuite('Looping', (env: TestEnv) => {
   });
 
   it.only('(User 5) Looping ETH with max leverage without initial debt', async () => {
-    const { users, helpersContract, looping, weth, vWETH } = env;
+    const { pool, users, helpersContract, looping, weth, vWETH } = env;
     const user = users[5];
 
     // User reserve data
@@ -323,10 +329,13 @@ makeSuite('Looping', (env: TestEnv) => {
       Number(parseUnits('0.2', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
+
+    const userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor:', userAccountData.healthFactor);
   });
 
   it.only('(User 5) Looping USDC with max leverage with initial debt (ETH)', async () => {
-    const { users, helpersContract, looping, usdc, vUSDC } = env;
+    const { pool, users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[5]; // user 5 has loop the ETH with max leverage
 
     // User USDC amount
@@ -374,10 +383,13 @@ makeSuite('Looping', (env: TestEnv) => {
       Number(parseUnits('0.2', 6).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
+
+    const userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor:', userAccountData.healthFactor);
   });
 
   it.only('(User 5) Looping DAI with max leverage with initial debt (ETH + USDC)', async () => {
-    const { users, helpersContract, looping, dai, vDai } = env;
+    const { pool, users, helpersContract, looping, dai, vDai } = env;
     const user = users[5];
 
     // User DAI amount
@@ -425,6 +437,9 @@ makeSuite('Looping', (env: TestEnv) => {
       Number(parseUnits('0.2', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
+
+    const userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor:', userAccountData.healthFactor);
   });
 
   it.only('(User 6) Looping ETH exceed max leverage without initial debt', async () => {
