@@ -72,7 +72,7 @@ makeSuite('Looping', (env: TestEnv) => {
     );
   });
 
-  it.only('Looping DAI with 3x leverage without initial debt', async () => {
+  it.only('(User 1) Looping DAI with 3x leverage without initial debt', async () => {
     const { users, helpersContract, looping, dai, vDai, aDai } = env;
     const user = users[1];
 
@@ -118,7 +118,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
 
-  it.only('Looping DAI with max leverage without initial debt', async () => {
+  it.only('(User 2) Looping DAI with max leverage without initial debt', async () => {
     const { users, helpersContract, looping, dai, vDai, aDai } = env;
     const user = users[2];
 
@@ -169,47 +169,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
 
-  it.only('Looping DAI exceed max leverage without initial debt', async () => {
-    const { users, helpersContract, looping, dai, vDai, aDai } = env;
-    const user = users[3];
-
-    // User DAI amount
-    expect(await dai.balanceOf(user.address)).eq(BigNumber.from(0));
-
-    // User reserve data
-    let userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
-    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
-
-    const { ltv } = await helpersContract.getReserveConfigurationData(dai.address);
-    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
-      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
-    ); // 4x
-
-    const daiAmount = parseUnits('600', 18); // 600 DAI
-    const principalDaiAmount = parseUnits('500', 18); // 500 DAI
-    const borrowedDaiAmount = principalDaiAmount.mul(leverage.sub(1)).add(parseUnits('1', 18)); // 1501 DAI
-    const flashloanFeeDaiAmount = borrowedDaiAmount.mul(9).div(PERCENTAGE_FACTOR);
-
-    // Mint DAI for user
-    await dai.connect(user.signer).mint(daiAmount);
-    await dai
-      .connect(user.signer)
-      .approve(looping.address, principalDaiAmount.add(flashloanFeeDaiAmount));
-
-    // User DAI balance
-    expect(await dai.balanceOf(user.address)).eq(daiAmount);
-
-    // Approval for looping contract to borrow for user
-    await vDai.connect(user.signer).approveDelegation(looping.address, borrowedDaiAmount);
-
-    // Loop
-    expect(
-      looping.connect(user.signer).loop(dai.address, principalDaiAmount, borrowedDaiAmount)
-    ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
-  });
-
-  it.only('Looping USDC with max leverage with initial debt (DAI)', async () => {
+  it.only('(User 2) Looping USDC with max leverage with initial debt (DAI)', async () => {
     const { users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[2]; // user 2 has loop the DAI with max leverage
 
@@ -260,7 +220,47 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
   });
 
-  it.only('Looping ETH with 3x leverage without initial debt', async () => {
+  it.only('(User 3) Looping DAI exceed max leverage without initial debt', async () => {
+    const { users, helpersContract, looping, dai, vDai, aDai } = env;
+    const user = users[3];
+
+    // User DAI amount
+    expect(await dai.balanceOf(user.address)).eq(BigNumber.from(0));
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const { ltv } = await helpersContract.getReserveConfigurationData(dai.address);
+    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
+      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
+    ); // 4x
+
+    const daiAmount = parseUnits('600', 18); // 600 DAI
+    const principalDaiAmount = parseUnits('500', 18); // 500 DAI
+    const borrowedDaiAmount = principalDaiAmount.mul(leverage.sub(1)).add(parseUnits('1', 18)); // 1501 DAI
+    const flashloanFeeDaiAmount = borrowedDaiAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Mint DAI for user
+    await dai.connect(user.signer).mint(daiAmount);
+    await dai
+      .connect(user.signer)
+      .approve(looping.address, principalDaiAmount.add(flashloanFeeDaiAmount));
+
+    // User DAI balance
+    expect(await dai.balanceOf(user.address)).eq(daiAmount);
+
+    // Approval for looping contract to borrow for user
+    await vDai.connect(user.signer).approveDelegation(looping.address, borrowedDaiAmount);
+
+    // Loop
+    expect(
+      looping.connect(user.signer).loop(dai.address, principalDaiAmount, borrowedDaiAmount)
+    ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
+  });
+
+  it.only('(User 4) Looping ETH with 3x leverage without initial debt', async () => {
     const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
     const user = users[4];
 
@@ -290,7 +290,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
   });
 
-  it.only('Looping ETH with max leverage without initial debt', async () => {
+  it.only('(User 5) Looping ETH with max leverage without initial debt', async () => {
     const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
     const user = users[5];
 
@@ -325,36 +325,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
   });
 
-  it.only('Looping ETH exceed max leverage without initial debt', async () => {
-    const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
-    const user = users[6];
-
-    // User reserve data
-    let userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
-    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
-
-    const { ltv } = await helpersContract.getReserveConfigurationData(weth.address);
-    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
-      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
-    ); // 5x
-
-    const principalWethAmount = parseUnits('500', 18); // 500 WETH
-    const borrowedWethAmount = principalWethAmount.mul(leverage.sub(1)).add(parseUnits('1', 18)); // 2001 ETH
-    const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(PERCENTAGE_FACTOR);
-
-    // Approval for looping contract to borrow for user
-    await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
-
-    // Loop
-    await expect(
-      looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
-        value: principalWethAmount.add(flashloanFeeWethAmount),
-      })
-    ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
-  });
-
-  it.only('Looping USDC with max leverage with initial debt (ETH)', async () => {
+  it.only('(User 5) Looping USDC with max leverage with initial debt (ETH)', async () => {
     const { users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[5]; // user 5 has loop the ETH with max leverage
 
@@ -405,7 +376,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
   });
 
-  it.only('Looping DAI with max leverage with initial debt (ETH + USDC)', async () => {
+  it.only('(User 5) Looping DAI with max leverage with initial debt (ETH + USDC)', async () => {
     const { users, helpersContract, looping, dai, vDai, aDai } = env;
     const user = users[5];
 
@@ -454,5 +425,34 @@ makeSuite('Looping', (env: TestEnv) => {
       Number(parseUnits('0.2', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
+  });
+
+  it.only('(User 6) Looping ETH exceed max leverage without initial debt', async () => {
+    const { users, helpersContract, looping, weth, vWETH, aWETH } = env;
+    const user = users[6];
+
+    // User reserve data
+    let userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    const { ltv } = await helpersContract.getReserveConfigurationData(weth.address);
+    const leverage = BigNumber.from(PERCENTAGE_FACTOR).div(
+      BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)
+    ); // 5x
+
+    const principalWethAmount = parseUnits('500', 18); // 500 WETH
+    const borrowedWethAmount = principalWethAmount.mul(leverage.sub(1)).add(parseUnits('1', 18)); // 2001 ETH
+    const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Approval for looping contract to borrow for user
+    await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
+
+    // Loop
+    await expect(
+      looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+        value: principalWethAmount.add(flashloanFeeWethAmount),
+      })
+    ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 });
