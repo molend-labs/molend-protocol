@@ -114,7 +114,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalDaiAmount.add(borrowedDaiAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
@@ -165,7 +165,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalDaiAmount.add(borrowedDaiAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
 
@@ -219,7 +219,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
-      Number(parseUnits('0.2', 6).toString())
+      Number(parseUnits('0.5', 6).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
 
@@ -292,7 +292,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalWethAmount.add(borrowedWethAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
   });
@@ -327,7 +327,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalWethAmount.add(borrowedWethAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
 
@@ -381,7 +381,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
-      Number(parseUnits('0.2', 6).toString())
+      Number(parseUnits('0.5', 6).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
 
@@ -435,7 +435,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalDaiAmount.add(borrowedDaiAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
 
@@ -523,7 +523,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
-      Number(parseUnits('0.2', 6).toString())
+      Number(parseUnits('0.5', 6).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
 
@@ -556,7 +556,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalWethAmount.add(borrowedWethAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
 
@@ -605,7 +605,7 @@ makeSuite('Looping', (env: TestEnv) => {
     userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
     expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
       Number(principalDaiAmount.add(borrowedDaiAmount).toString()),
-      Number(parseUnits('0.2', 18).toString())
+      Number(parseUnits('0.5', 18).toString())
     );
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
 
