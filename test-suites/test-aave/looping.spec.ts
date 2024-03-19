@@ -472,7 +472,7 @@ makeSuite('Looping', (env: TestEnv) => {
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 
-  it.only('(User 6) Looping USDC -> ETH -> DAI', async () => {
+  it.only('(User 6) Looping USDC -> ETH -> DAI with (0.999 * max leverage)', async () => {
     const { pool, users, helpersContract, looping, weth, vWETH, usdc, vUSDC, dai, vDai } = env;
     const user = users[6];
 
@@ -480,88 +480,6 @@ makeSuite('Looping', (env: TestEnv) => {
     let userAccountData: UnwrapPromise<ReturnType<typeof pool.getUserAccountData>>;
     let ltv: BigNumber;
     let leverage: BigNumber;
-
-    // -------------------------- loop USDC -------------------------------
-
-    // User USDC amount
-    expect(await usdc.balanceOf(user.address)).eq(BigNumber.from(0));
-
-    // User reserve data
-    userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
-    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
-
-    ({ ltv } = await helpersContract.getReserveConfigurationData(usdc.address));
-    leverage = BigNumber.from(PERCENTAGE_FACTOR).div(BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)); // 5x
-
-    const usdcAmount = parseUnits('600', 6); // 600 USDC
-    const principalUsdcAmount = parseUnits('500', 6); // 500 USDC
-    const borrowedUsdcAmount = principalUsdcAmount.mul(leverage.sub(1)); // 2000 USDC
-    const flashloanFeeUsdcAmount = borrowedUsdcAmount.mul(9).div(PERCENTAGE_FACTOR);
-
-    // Mint USDC for user
-    await usdc.connect(user.signer).mint(usdcAmount);
-    await usdc
-      .connect(user.signer)
-      .approve(looping.address, principalUsdcAmount.add(flashloanFeeUsdcAmount));
-
-    // User USDC balance
-    expect(await usdc.balanceOf(user.address)).eq(usdcAmount);
-
-    // Approval for looping contract to borrow for user
-    await vUSDC.connect(user.signer).approveDelegation(looping.address, borrowedUsdcAmount);
-
-    // Loop
-    await looping.connect(user.signer).loop(usdc.address, principalUsdcAmount, borrowedUsdcAmount);
-
-    // User remaining USDC balance after looping
-    expect(await usdc.balanceOf(user.address)).eq(
-      usdcAmount.sub(principalUsdcAmount).sub(flashloanFeeUsdcAmount)
-    );
-
-    // User reserve data
-    userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
-    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
-      Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
-      Number(parseUnits('0.5', 6).toString())
-    );
-    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
-
-    userAccountData = await pool.getUserAccountData(user.address);
-    console.log('HealthFactor (USDC):', userAccountData.healthFactor);
-
-    // -------------------------- loop ETH -------------------------------
-
-    // User reserve data
-    userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
-    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
-    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
-
-    ({ ltv } = await helpersContract.getReserveConfigurationData(weth.address));
-    leverage = BigNumber.from(PERCENTAGE_FACTOR).div(BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)); // 5x
-
-    const principalWethAmount = parseUnits('500', 18); // 500 WETH
-    const borrowedWethAmount = principalWethAmount.mul(leverage.sub(1)); // 2000 ETH
-    const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(PERCENTAGE_FACTOR);
-
-    // Approval for looping contract to borrow for user
-    await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
-
-    // Loop
-    await looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
-      value: principalWethAmount.add(flashloanFeeWethAmount),
-    });
-
-    // User reserve data
-    userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
-    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
-      Number(principalWethAmount.add(borrowedWethAmount).toString()),
-      Number(parseUnits('0.5', 18).toString())
-    );
-    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
-
-    userAccountData = await pool.getUserAccountData(user.address);
-    console.log('HealthFactor (USDC + ETH):', userAccountData.healthFactor);
 
     // -------------------------- loop DAI -------------------------------
 
@@ -578,7 +496,7 @@ makeSuite('Looping', (env: TestEnv) => {
 
     const daiAmount = parseUnits('600', 18); // 600 DAI
     const principalDaiAmount = parseUnits('500', 18); // 500 DAI
-    const borrowedDaiAmount = principalDaiAmount.mul(leverage.sub(1)); // 1500 DAI
+    const borrowedDaiAmount = principalDaiAmount.mul(leverage.sub(1)).sub(parseUnits('2', 18)); // 1498 DAI， leverage = 4 * 0.999 = 3.996
     const flashloanFeeDaiAmount = borrowedDaiAmount.mul(9).div(PERCENTAGE_FACTOR);
 
     // Mint DAI for user
@@ -610,6 +528,88 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
 
     userAccountData = await pool.getUserAccountData(user.address);
-    console.log('HealthFactor (USDC + ETH + DAI):', userAccountData.healthFactor);
+    console.log('HealthFactor (DAI):', userAccountData.healthFactor);
+
+    // -------------------------- loop USDC -------------------------------
+
+    // User USDC amount
+    expect(await usdc.balanceOf(user.address)).eq(BigNumber.from(0));
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    ({ ltv } = await helpersContract.getReserveConfigurationData(usdc.address));
+    leverage = BigNumber.from(PERCENTAGE_FACTOR).div(BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)); // 5x
+
+    const usdcAmount = parseUnits('600', 6); // 600 USDC
+    const principalUsdcAmount = parseUnits('500', 6); // 500 USDC
+    const borrowedUsdcAmount = principalUsdcAmount.mul(leverage.sub(1)).sub(parseUnits('2.5', 6)); // 1997.5 USDC, leverage = 5 * 0.999 = 4.995
+    const flashloanFeeUsdcAmount = borrowedUsdcAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Mint USDC for user
+    await usdc.connect(user.signer).mint(usdcAmount);
+    await usdc
+      .connect(user.signer)
+      .approve(looping.address, principalUsdcAmount.add(flashloanFeeUsdcAmount));
+
+    // User USDC balance
+    expect(await usdc.balanceOf(user.address)).eq(usdcAmount);
+
+    // Approval for looping contract to borrow for user
+    await vUSDC.connect(user.signer).approveDelegation(looping.address, borrowedUsdcAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(usdc.address, principalUsdcAmount, borrowedUsdcAmount);
+
+    // User remaining USDC balance after looping
+    expect(await usdc.balanceOf(user.address)).eq(
+      usdcAmount.sub(principalUsdcAmount).sub(flashloanFeeUsdcAmount)
+    );
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(usdc.address, user.address);
+    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
+      Number(principalUsdcAmount.add(borrowedUsdcAmount).toString()),
+      Number(parseUnits('0.5', 6).toString())
+    );
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedUsdcAmount));
+
+    userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor (DAI + USDC):', userAccountData.healthFactor);
+
+    // -------------------------- loop ETH -------------------------------
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    ({ ltv } = await helpersContract.getReserveConfigurationData(weth.address));
+    leverage = BigNumber.from(PERCENTAGE_FACTOR).div(BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)); // 5x
+
+    const principalWethAmount = parseUnits('500', 18); // 500 WETH
+    const borrowedWethAmount = principalWethAmount.mul(leverage.sub(1)).sub(parseUnits('2.5', 18)); // 1997.5 ETH, leverage = 5 * 0.999 = 4.995
+    const flashloanFeeWethAmount = borrowedWethAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Approval for looping contract to borrow for user
+    await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+      value: principalWethAmount.add(flashloanFeeWethAmount),
+    });
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(weth.address, user.address);
+    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
+      Number(principalWethAmount.add(borrowedWethAmount).toString()),
+      Number(parseUnits('0.5', 18).toString())
+    );
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
+
+    userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor (DAi + USDC + ETH):', userAccountData.healthFactor);
   });
 });
