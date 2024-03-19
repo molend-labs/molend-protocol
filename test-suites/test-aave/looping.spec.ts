@@ -472,8 +472,8 @@ makeSuite('Looping', (env: TestEnv) => {
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 
-  it.only('(User 6) Looping ETH with max leverage and then looping USDC with (approaching) max leverage', async () => {
-    const { pool, users, helpersContract, looping, weth, vWETH, usdc, vUSDC } = env;
+  it.only('(User 6) Looping USDC -> ETH -> DAI', async () => {
+    const { pool, users, helpersContract, looping, weth, vWETH, usdc, vUSDC, dai, vDai } = env;
     const user = users[6];
 
     let userReserveData: UnwrapPromise<ReturnType<typeof helpersContract.getUserReserveData>>;
@@ -562,5 +562,54 @@ makeSuite('Looping', (env: TestEnv) => {
 
     userAccountData = await pool.getUserAccountData(user.address);
     console.log('HealthFactor (USDC + ETH):', userAccountData.healthFactor);
+
+    // -------------------------- loop DAI -------------------------------
+
+    // User DAI amount
+    expect(await dai.balanceOf(user.address)).eq(BigNumber.from(0));
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
+    expect(userReserveData.currentATokenBalance).eq(BigNumber.from(0));
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(0));
+
+    ({ ltv } = await helpersContract.getReserveConfigurationData(dai.address));
+    leverage = BigNumber.from(PERCENTAGE_FACTOR).div(BigNumber.from(PERCENTAGE_FACTOR).sub(ltv)); // 4x
+
+    const daiAmount = parseUnits('600', 18); // 600 DAI
+    const principalDaiAmount = parseUnits('500', 18); // 500 DAI
+    const borrowedDaiAmount = principalDaiAmount.mul(leverage.sub(1)); // 1500 DAI
+    const flashloanFeeDaiAmount = borrowedDaiAmount.mul(9).div(PERCENTAGE_FACTOR);
+
+    // Mint DAI for user
+    await dai.connect(user.signer).mint(daiAmount);
+    await dai
+      .connect(user.signer)
+      .approve(looping.address, principalDaiAmount.add(flashloanFeeDaiAmount));
+
+    // User DAI balance
+    expect(await dai.balanceOf(user.address)).eq(daiAmount);
+
+    // Approval for looping contract to borrow for user
+    await vDai.connect(user.signer).approveDelegation(looping.address, borrowedDaiAmount);
+
+    // Loop
+    await looping.connect(user.signer).loop(dai.address, principalDaiAmount, borrowedDaiAmount);
+
+    // User remaining DAI balance after looping
+    expect(await dai.balanceOf(user.address)).eq(
+      daiAmount.sub(principalDaiAmount).sub(flashloanFeeDaiAmount)
+    );
+
+    // User reserve data
+    userReserveData = await helpersContract.getUserReserveData(dai.address, user.address);
+    expect(Number(userReserveData.currentATokenBalance.toString())).approximately(
+      Number(principalDaiAmount.add(borrowedDaiAmount).toString()),
+      Number(parseUnits('0.2', 18).toString())
+    );
+    expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
+
+    userAccountData = await pool.getUserAccountData(user.address);
+    console.log('HealthFactor (USDC + ETH + DAI):', userAccountData.healthFactor);
   });
 });
