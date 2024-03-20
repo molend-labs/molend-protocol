@@ -41,6 +41,7 @@ contract Looping is IFlashLoanReceiver {
     bytes calldata params
   ) external override returns (bool) {
     require(msg.sender == address(LENDING_POOL), "Only Lending Pool can call executeOperation");
+    require(initiator == address(this), "Unexpected initiator");
 
     (
       address payable user,
