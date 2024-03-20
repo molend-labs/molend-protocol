@@ -7,7 +7,7 @@ import { PERCENTAGE_FACTOR } from '../../helpers/constants';
 import { UnwrapPromise } from '../../helpers/types';
 
 makeSuite('Looping', (env: TestEnv) => {
-  it.only('Add Liquidity', async () => {
+  it('Add Liquidity', async () => {
     const { users, helpersContract, pool, dai, aDai, weth, aWETH, usdc, aUSDC } = env;
     const liquidityProvider = users[0];
 
@@ -73,7 +73,7 @@ makeSuite('Looping', (env: TestEnv) => {
     );
   });
 
-  it.only('(User 1) Looping DAI with 3x leverage', async () => {
+  it('(User 1) Looping DAI with 3x leverage', async () => {
     const { users, helpersContract, looping, dai, vDai } = env;
     const user = users[1];
 
@@ -119,7 +119,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedDaiAmount));
   });
 
-  it.only('(User 2) Looping DAI with max leverage', async () => {
+  it('(User 2) Looping DAI with max leverage', async () => {
     const { pool, users, helpersContract, looping, dai, vDai } = env;
     const user = users[2];
 
@@ -173,7 +173,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (DAI):', userAccountData.healthFactor);
   });
 
-  it.only('(User 2) Looping USDC with max leverage with initial debt (DAI)', async () => {
+  it('(User 2) Looping USDC with max leverage with initial debt (DAI)', async () => {
     const { pool, users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[2]; // user 2 has loop the DAI with max leverage
 
@@ -227,7 +227,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (DAI + USDC):', userAccountData.healthFactor);
   });
 
-  it.only('(User 3) Looping DAI exceed max leverage', async () => {
+  it('(User 3) Looping DAI exceed max leverage', async () => {
     const { users, helpersContract, looping, dai, vDai } = env;
     const user = users[3];
 
@@ -267,7 +267,7 @@ makeSuite('Looping', (env: TestEnv) => {
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 
-  it.only('(User 4) Looping ETH with 3x leverage', async () => {
+  it('(User 4) Looping ETH with 3x leverage', async () => {
     const { users, helpersContract, looping, weth, vWETH } = env;
     const user = users[4];
 
@@ -297,7 +297,7 @@ makeSuite('Looping', (env: TestEnv) => {
     expect(userReserveData.currentVariableDebt).eq(BigNumber.from(borrowedWethAmount));
   });
 
-  it.only('(User 5) Looping ETH with max leverage', async () => {
+  it('(User 5) Looping ETH with max leverage', async () => {
     const { pool, users, helpersContract, looping, weth, vWETH } = env;
     const user = users[5];
 
@@ -335,7 +335,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (ETH):', userAccountData.healthFactor);
   });
 
-  it.only('(User 5) Looping USDC with max leverage with initial debt (ETH)', async () => {
+  it('(User 5) Looping USDC with max leverage with initial debt (ETH)', async () => {
     const { pool, users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[5]; // user 5 has loop the ETH with max leverage
 
@@ -389,7 +389,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (ETH + USDC):', userAccountData.healthFactor);
   });
 
-  it.only('(User 5) Looping DAI with max leverage with initial debt (ETH + USDC)', async () => {
+  it('(User 5) Looping DAI with max leverage with initial debt (ETH + USDC)', async () => {
     const { pool, users, helpersContract, looping, dai, vDai } = env;
     const user = users[5];
 
@@ -443,7 +443,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (ETH + USDC + DAI):', userAccountData.healthFactor);
   });
 
-  it.only('(User 6) Looping ETH exceed max leverage', async () => {
+  it('(User 6) Looping ETH exceed max leverage', async () => {
     const { users, helpersContract, looping, weth, vWETH } = env;
     const user = users[6];
 
@@ -472,7 +472,7 @@ makeSuite('Looping', (env: TestEnv) => {
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 
-  it.only('(User 6) Looping USDC -> ETH -> DAI with (0.999 * max leverage)', async () => {
+  it('(User 6) Looping USDC -> ETH -> DAI with (0.999 * max leverage)', async () => {
     const { pool, users, helpersContract, looping, weth, vWETH, usdc, vUSDC, dai, vDai } = env;
     const user = users[6];
 
