@@ -46,7 +46,6 @@ contract Looping is IFlashLoanReceiver {
 
     require(
       assets.length == 1 &&
-      assets[0] == asset &&
       amounts.length == 1 &&
       amounts[0] == borrowed &&
       premiums.length == 1,
@@ -57,6 +56,7 @@ contract Looping is IFlashLoanReceiver {
     uint256 principalPlusPremuim = principal.add(premuim);
 
     if (asset == address(0)) {
+      asset = address(WETH);
       require(value >= principalPlusPremuim, "Insufficient attached Ether");
       WETH.deposit{value: principalPlusPremuim}();
       uint256 extra = value - principalPlusPremuim;
@@ -94,16 +94,17 @@ contract Looping is IFlashLoanReceiver {
     uint256 principal,
     uint256 borrowed
   ) external payable {
+    address[] memory assets = new address[](1);
+
     if (asset == address(0)) {
       // assume looping Ether
       require(msg.value > 0, "Need to attach Ether");
+      assets[0] = address(WETH);
     } else {
       // assume looping ERC20
       require(msg.value == 0, "Does not need to attach Ether");
+      assets[0] = asset;
     }
-
-    address[] memory assets = new address[](1);
-    assets[0] = asset;
 
     uint256[] memory amounts = new uint256[](1);
     amounts[0] = borrowed;
