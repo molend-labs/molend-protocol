@@ -23,6 +23,10 @@ contract Looping is IFlashLoanReceiver {
     WETH = weth;
   }
 
+  function getWETHAddress() external view returns (address) {
+    return address(WETH);
+  }
+
   /// This function is called by lending pool after your contract has received the flash loaned amount
   /// @param assets  flashloan received assets
   /// @param amounts  flashloan received asset amounts
@@ -48,7 +52,7 @@ contract Looping is IFlashLoanReceiver {
 
     require(
       assets.length == 1 &&
-      (asset == address(0) && assets[0] == address(WETH) || asset != address(0) && assets[0] == asset) &&
+      assets[0] == asset &&
       amounts.length == 1 &&
       amounts[0] == borrowed &&
       premiums.length == 1,
@@ -58,15 +62,16 @@ contract Looping is IFlashLoanReceiver {
     uint256 premuim = premiums[0];
     uint256 principalPlusPremuim = principal.add(premuim);
 
-    if (asset == address(0)) {
-      asset = address(WETH);
+    if (value > 0) {
+      // Looping ETH
       require(value >= principalPlusPremuim, "Insufficient attached Ether");
       WETH.deposit{value: principalPlusPremuim}();
-      uint256 extra = value - principalPlusPremuim;
+      uint256 extra = value.sub(principalPlusPremuim);
       if (extra > 0) {
         user.transfer(extra);
       }
     } else {
+      // Looping ERC20
       IERC20(asset).safeTransferFrom(user, address(this), principalPlusPremuim);
     }
 
@@ -90,24 +95,14 @@ contract Looping is IFlashLoanReceiver {
 
   // One click loop
   // Before call loop
-  // If looping Ether: user should attach (principal + falshloan premium) Ether to this contract
-  // If looping ERC20: user should approve (principal + falshloan premium) asset to this contract
+  // User should approve (principal + falshloan premium) asset to this contract
   function loop(
     address asset,
     uint256 principal,
     uint256 borrowed
-  ) external payable {
+  ) external {
     address[] memory assets = new address[](1);
-
-    if (asset == address(0)) {
-      // assume looping Ether
-      require(msg.value > 0, "Need to attach Ether");
-      assets[0] = address(WETH);
-    } else {
-      // assume looping ERC20
-      require(msg.value == 0, "Does not need to attach Ether");
-      assets[0] = asset;
-    }
+    assets[0] = asset;
 
     uint256[] memory amounts = new uint256[](1);
     amounts[0] = borrowed;
@@ -115,7 +110,39 @@ contract Looping is IFlashLoanReceiver {
     uint256[] memory modes = new uint256[](1);
     modes[0] = 0;
 
-    bytes memory params = abi.encode(msg.sender, asset, principal, borrowed, msg.value);
+    bytes memory params = abi.encode(msg.sender, assets[0], principal, borrowed, 0);
+
+    LENDING_POOL.flashLoan(
+      address(this),
+      assets,
+      amounts,
+      modes,
+      address(this),
+      params,
+      0
+    );
+  }
+
+  // One click loop
+  // Before call loop
+  // User should attach (principal + falshloan premium) Ether to this contract
+  function loopETH(
+    uint256 principal,
+    uint256 borrowed
+  ) external payable {
+    require(msg.value > 0, "Need to attach Ether");
+
+    address[] memory assets = new address[](1);
+
+    assets[0] = address(WETH);
+
+    uint256[] memory amounts = new uint256[](1);
+    amounts[0] = borrowed;
+
+    uint256[] memory modes = new uint256[](1);
+    modes[0] = 0;
+
+    bytes memory params = abi.encode(msg.sender, assets[0], principal, borrowed, msg.value);
 
     LENDING_POOL.flashLoan(
       address(this),
