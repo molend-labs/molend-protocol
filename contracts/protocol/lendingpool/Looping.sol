@@ -56,15 +56,14 @@ contract Looping is IFlashLoanReceiver {
     uint256 premuim = premiums[0];
     uint256 principalPlusPremuim = principal.add(premuim);
 
-    if (asset == address(WETH)) {
-      require(value >= principalPlusPremuim, "Insufficient attached ETH as FlightLoan fee");
+    if (asset == address(0)) {
+      require(value >= principalPlusPremuim, "Insufficient attached Ether");
       WETH.deposit{value: principalPlusPremuim}();
       uint256 extra = value - principalPlusPremuim;
       if (extra > 0) {
         user.transfer(extra);
       }
     } else {
-      require(value == 0, "Don't attach any Ether");
       IERC20(asset).safeTransferFrom(user, address(this), principalPlusPremuim);
     }
 
@@ -76,7 +75,7 @@ contract Looping is IFlashLoanReceiver {
 
     // borrow (borrowed) from LendingPool
     // now this contract owned: (borrowed + premuim)
-    LENDING_POOL.borrow(asset, borrowed, 2, 0, user); // TODO interestRateMode
+    LENDING_POOL.borrow(asset, borrowed, 2, 0, user);
 
     // Approve the LendingPool contract allowance to *pull* the owed amount
     // i.e. AAVE V2's way of repaying the flash loan
@@ -87,14 +86,20 @@ contract Looping is IFlashLoanReceiver {
   }
 
   // One click loop
-  // Before call loop, user should approve (principal + falshloan premium) asset to this contract
+  // Before call loop
+  // If looping Ether: user should attach (principal + falshloan premium) Ether to this contract
+  // If looping ERC20: user should approve (principal + falshloan premium) asset to this contract
   function loop(
     address asset,
     uint256 principal,
     uint256 borrowed
   ) external payable {
-    if (asset == address(WETH)) {
-      require(msg.value >= principal, "Attached Ether should grater or equal than principal");
+    if (asset == address(0)) {
+      // assume looping Ether
+      require(msg.value > 0, "Need to attach Ether");
+    } else {
+      // assume looping ERC20
+      require(msg.value == 0, "Does not need to attach Ether");
     }
 
     address[] memory assets = new address[](1);

@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { ProtocolErrors } from '../../helpers/types';
-import { PERCENTAGE_FACTOR } from '../../helpers/constants';
+import { PERCENTAGE_FACTOR, ZERO_ADDRESS } from '../../helpers/constants';
 import { UnwrapPromise } from '../../helpers/types';
 
 makeSuite('Looping', (env: TestEnv) => {
@@ -284,7 +284,7 @@ makeSuite('Looping', (env: TestEnv) => {
     await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
 
     // Loop
-    await looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+    await looping.connect(user.signer).loop(ZERO_ADDRESS, principalWethAmount, borrowedWethAmount, {
       value: principalWethAmount.add(flashloanFeeWethAmount),
     });
 
@@ -319,7 +319,7 @@ makeSuite('Looping', (env: TestEnv) => {
     await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
 
     // Loop
-    await looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+    await looping.connect(user.signer).loop(ZERO_ADDRESS, principalWethAmount, borrowedWethAmount, {
       value: principalWethAmount.add(flashloanFeeWethAmount),
     });
 
@@ -466,13 +466,13 @@ makeSuite('Looping', (env: TestEnv) => {
 
     // Loop
     await expect(
-      looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+      looping.connect(user.signer).loop(ZERO_ADDRESS, principalWethAmount, borrowedWethAmount, {
         value: principalWethAmount.add(flashloanFeeWethAmount),
       })
     ).revertedWith(ProtocolErrors.VL_COLLATERAL_CANNOT_COVER_NEW_BORROW);
   });
 
-  it('(User 6) Looping USDC -> ETH -> DAI with (0.999 * max leverage)', async () => {
+  it('(User 6) Looping DAI -> USDC -> ETH with (0.999 * max leverage)', async () => {
     const { pool, users, helpersContract, looping, weth, vWETH, usdc, vUSDC, dai, vDai } = env;
     const user = users[6];
 
@@ -597,7 +597,7 @@ makeSuite('Looping', (env: TestEnv) => {
     await vWETH.connect(user.signer).approveDelegation(looping.address, borrowedWethAmount);
 
     // Loop
-    await looping.connect(user.signer).loop(weth.address, principalWethAmount, borrowedWethAmount, {
+    await looping.connect(user.signer).loop(ZERO_ADDRESS, principalWethAmount, borrowedWethAmount, {
       value: principalWethAmount.add(flashloanFeeWethAmount),
     });
 
