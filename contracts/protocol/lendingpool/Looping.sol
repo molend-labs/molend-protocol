@@ -101,26 +101,7 @@ contract Looping is IFlashLoanReceiver {
     uint256 principal,
     uint256 borrowed
   ) external {
-    address[] memory assets = new address[](1);
-    assets[0] = asset;
-
-    uint256[] memory amounts = new uint256[](1);
-    amounts[0] = borrowed;
-
-    uint256[] memory modes = new uint256[](1);
-    modes[0] = 0;
-
-    bytes memory params = abi.encode(msg.sender, assets[0], principal, borrowed, 0);
-
-    LENDING_POOL.flashLoan(
-      address(this),
-      assets,
-      amounts,
-      modes,
-      address(this),
-      params,
-      0
-    );
+    internalLoop(asset, principal, borrowed);
   }
 
   // One click loop
@@ -131,10 +112,16 @@ contract Looping is IFlashLoanReceiver {
     uint256 borrowed
   ) external payable {
     require(msg.value > 0, "Need to attach Ether");
+    internalLoop(address(WETH), principal, borrowed);
+  }
 
+  function internalLoop(
+    address asset,
+    uint256 principal,
+    uint256 borrowed
+  ) internal {
     address[] memory assets = new address[](1);
-
-    assets[0] = address(WETH);
+    assets[0] = asset;
 
     uint256[] memory amounts = new uint256[](1);
     amounts[0] = borrowed;
@@ -142,7 +129,7 @@ contract Looping is IFlashLoanReceiver {
     uint256[] memory modes = new uint256[](1);
     modes[0] = 0;
 
-    bytes memory params = abi.encode(msg.sender, assets[0], principal, borrowed, msg.value);
+    bytes memory params = abi.encode(msg.sender, asset, principal, borrowed, msg.value);
 
     LENDING_POOL.flashLoan(
       address(this),
