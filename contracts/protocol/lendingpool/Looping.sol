@@ -36,6 +36,8 @@ contract Looping is IFlashLoanReceiver {
     address initiator,
     bytes calldata params
   ) external override returns (bool) {
+    require(msg.sender == address(LENDING_POOL), "Only Lending Pool can call executeOperation");
+
     (
       address payable user,
       address asset,
@@ -46,6 +48,7 @@ contract Looping is IFlashLoanReceiver {
 
     require(
       assets.length == 1 &&
+      (asset == address(0) && assets[0] == address(WETH) || asset != address(0) && assets[0] == asset) &&
       amounts.length == 1 &&
       amounts[0] == borrowed &&
       premiums.length == 1,
