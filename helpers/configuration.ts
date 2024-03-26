@@ -12,6 +12,7 @@ import MaticConfig from '../markets/matic';
 import AvalancheConfig from '../markets/avalanche';
 import AmmConfig from '../markets/amm';
 import ModeConfig from '../markets/mode';
+import ModeTestnetConfig from '../markets/modeTestnet';
 
 import { CommonsConfig } from '../markets/aave/commons';
 import { DRE, filterMapBy } from './misc-utils';
@@ -25,7 +26,8 @@ export enum ConfigNames {
   Matic = 'Matic',
   Amm = 'Amm',
   Avalanche = 'Avalanche',
-  Mode = 'Mode'
+  Mode = 'Mode',
+  ModeTestnet = 'ModeTestnet',
 }
 
 export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
@@ -36,10 +38,12 @@ export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
       return MaticConfig;
     case ConfigNames.Mode:
       return ModeConfig;
+    case ConfigNames.ModeTestnet:
+      return ModeTestnetConfig;
     case ConfigNames.Amm:
       return AmmConfig;
-      case ConfigNames.Avalanche:
-        return AvalancheConfig;
+    case ConfigNames.Avalanche:
+      return AvalancheConfig;
     case ConfigNames.Commons:
       return CommonsConfig;
     default:
@@ -72,7 +76,10 @@ export const getReservesConfigByPool = (pool: AavePools): iMultiPoolsAssets<IRes
       },
       [AavePools.mode]: {
         ...ModeConfig.ReservesConfig,
-      }
+      },
+      [AavePools.modeTestnet]: {
+        ...ModeTestnetConfig.ReservesConfig,
+      },
     },
     pool
   );

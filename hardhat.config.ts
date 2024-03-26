@@ -109,6 +109,7 @@ const buidlerConfig: HardhatUserConfig = {
     mumbai: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
     // mode: getCommonNetworkConfig(eModeNetwork.mode, 31337),
     mode: getCommonNetworkConfig(eModeNetwork.mode, 34443),
+    modeTestnet: getCommonNetworkConfig(eModeNetwork.modeTestnet, 919),
     xdai: getCommonNetworkConfig(eXDaiNetwork.xdai, 100),
     avalanche: getCommonNetworkConfig(eAvalancheNetwork.avalanche, 43114),
     fuji: getCommonNetworkConfig(eAvalancheNetwork.fuji, 43113),

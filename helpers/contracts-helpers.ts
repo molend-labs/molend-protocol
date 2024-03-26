@@ -21,6 +21,7 @@ import {
   eAvalancheNetwork,
   eModeNetwork,
   iModeParamsPerNetwork,
+  iModeTestnetParamsPerNetwork,
 } from './types';
 import { MintableERC20 } from '../types/MintableERC20';
 import { Artifact } from 'hardhat/types';
@@ -152,6 +153,7 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
     param as iEthereumParamsPerNetwork<T>;
   const { matic, mumbai } = param as iPolygonParamsPerNetwork<T>;
   const { mode } = param as iModeParamsPerNetwork<T>;
+  const { modeTestnet } = param as iModeTestnetParamsPerNetwork<T>;
   const { xdai } = param as iXDaiParamsPerNetwork<T>;
   const { avalanche, fuji } = param as iAvalancheParamsPerNetwork<T>;
   if (process.env.FORK) {
@@ -185,6 +187,8 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
       return fuji;
     case eModeNetwork.mode:
       return mode;
+    case eModeNetwork.modeTestnet:
+      return modeTestnet;
   }
 };
 
@@ -198,7 +202,10 @@ export const getOptionalParamAddressPerNetwork = (
   return getParamPerNetwork(param, network);
 };
 
-export const getParamPerPool = <T>({ proto, amm, matic, avalanche, mode }: iParamsPerPool<T>, pool: AavePools) => {
+export const getParamPerPool = <T>(
+  { proto, amm, matic, avalanche, mode, modeTestnet }: iParamsPerPool<T>,
+  pool: AavePools
+) => {
   switch (pool) {
     case AavePools.proto:
       return proto;
@@ -210,6 +217,8 @@ export const getParamPerPool = <T>({ proto, amm, matic, avalanche, mode }: iPara
       return avalanche;
     case AavePools.mode:
       return mode;
+    case AavePools.modeTestnet:
+      return modeTestnet;
     default:
       return proto;
   }
