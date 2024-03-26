@@ -27,9 +27,6 @@ contract Looping {
     return address(WETH);
   }
 
-  // One click loop
-  // Before call loop
-  // User should approve (principal + flashloan premium) asset to this contract
   function loop(
     address asset,
     uint256 amount,
@@ -48,9 +45,6 @@ contract Looping {
     internalLoop(user, asset, amount, borrowRatio, borrowCount);
   }
 
-  // One click loop
-  // Before call loop
-  // User should attach (principal + flashloan premium) Ether to this contract
   function loopETH(
     uint256 borrowRatio,
     uint256 borrowCount
