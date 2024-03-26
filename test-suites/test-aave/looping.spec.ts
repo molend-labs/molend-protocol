@@ -9,7 +9,7 @@ import { ProtocolErrors } from '../../helpers/types';
 const MAX_LOOP_COUNT = 10;
 
 makeSuite('Looping', (env: TestEnv) => {
-  it.only('Loop unsupported token', async () => {
+  it('Loop unsupported token', async () => {
     const { looping, users } = env;
     const user = users[0];
     const token = await deployMintableERC20(['Unsupported', 'Unsupported', '18']);
