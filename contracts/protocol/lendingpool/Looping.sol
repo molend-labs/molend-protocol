@@ -12,6 +12,7 @@ import "../../misc/interfaces/IWETH.sol";
 contract Looping is IFlashLoanReceiver {
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
+  uint256 public constant RATIO_DIVISOR = 10000;
 
   ILendingPoolAddressesProvider public immutable override ADDRESSES_PROVIDER;
   ILendingPool public immutable override LENDING_POOL;
@@ -96,50 +97,55 @@ contract Looping is IFlashLoanReceiver {
 
   // One click loop
   // Before call loop
-  // User should approve (principal + falshloan premium) asset to this contract
+  // User should approve (principal + flashloan premium) asset to this contract
   function loop(
     address asset,
-    uint256 principal,
-    uint256 borrowed
+    uint256 amount,
+    uint256 borrowRatio,
+    uint256 borrowCount
   ) external {
-    internalLoop(asset, principal, borrowed);
+    require(borrowRatio <= RATIO_DIVISOR, "Invalid ratio");
+    address user = msg.sender;
+
+    IERC20(asset).safeTransferFrom(user, address(this), amount);
+
+    if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
+        IERC20(asset).safeApprove(address(LENDING_POOL), uint256(-1));
+    }
+
+    internalLoop(user, asset, amount, borrowRatio, borrowCount);
   }
 
   // One click loop
   // Before call loop
-  // User should attach (principal + falshloan premium) Ether to this contract
+  // User should attach (principal + flashloan premium) Ether to this contract
   function loopETH(
-    uint256 principal,
-    uint256 borrowed
+    uint256 borrowRatio,
+    uint256 borrowCount
   ) external payable {
-    require(msg.value > 0, "Need to attach Ether");
-    internalLoop(address(WETH), principal, borrowed);
+    require(borrowRatio <= RATIO_DIVISOR, "Invalid ratio");
+    address user = msg.sender;
+
+    uint256 amount = msg.value;
+    require(amount > 0, "Need to attach Ether");
+    WETH.deposit{value: amount}();
+
+    internalLoop(user, address(WETH), amount, borrowRatio, borrowCount);
   }
 
   function internalLoop(
+    address user,
     address asset,
-    uint256 principal,
-    uint256 borrowed
+    uint256 amount,
+    uint256 borrowRatio,
+    uint256 borrowCount
   ) internal {
-    address[] memory assets = new address[](1);
-    assets[0] = asset;
+    for (uint256 i = 0; i < borrowCount; i++) {
+      LENDING_POOL.deposit(asset, amount, user, 0);
+      amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
+      LENDING_POOL.borrow(asset, amount, 2, 0, user);
+    }
 
-    uint256[] memory amounts = new uint256[](1);
-    amounts[0] = borrowed;
-
-    uint256[] memory modes = new uint256[](1);
-    modes[0] = 0;
-
-    bytes memory params = abi.encode(msg.sender, asset, principal, borrowed, msg.value);
-
-    LENDING_POOL.flashLoan(
-      address(this),
-      assets,
-      amounts,
-      modes,
-      address(this),
-      params,
-      0
-    );
+    LENDING_POOL.deposit(asset, amount, user, 0);
   }
 }
