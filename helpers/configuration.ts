@@ -1,23 +1,24 @@
+import AaveConfig from '../markets/aave';
+import AmmConfig from '../markets/amm';
+import AvalancheConfig from '../markets/avalanche';
+import MaticConfig from '../markets/matic';
+import ModeConfig from '../markets/mode';
+import ModeSepoliaConfig from '../markets/modeSepolia';
+import { getEthersSignersAddresses, getParamPerPool } from './contracts-helpers';
 import {
   AavePools,
-  iMultiPoolsAssets,
+  IBaseConfiguration,
   IReserveParams,
   PoolConfiguration,
   eNetwork,
-  IBaseConfiguration,
+  iMultiPoolsAssets,
 } from './types';
-import { getEthersSignersAddresses, getParamPerPool } from './contracts-helpers';
-import AaveConfig from '../markets/aave';
-import MaticConfig from '../markets/matic';
-import AvalancheConfig from '../markets/avalanche';
-import AmmConfig from '../markets/amm';
-import ModeConfig from '../markets/mode';
 
 import { CommonsConfig } from '../markets/aave/commons';
+import { deployWETHMocked } from './contracts-deployments';
+import { getParamPerNetwork } from './contracts-helpers';
 import { DRE, filterMapBy } from './misc-utils';
 import { tEthereumAddress } from './types';
-import { getParamPerNetwork } from './contracts-helpers';
-import { deployWETHMocked } from './contracts-deployments';
 
 export enum ConfigNames {
   Commons = 'Commons',
@@ -25,7 +26,8 @@ export enum ConfigNames {
   Matic = 'Matic',
   Amm = 'Amm',
   Avalanche = 'Avalanche',
-  Mode = 'Mode'
+  Mode = 'Mode',
+  ModeSepolia = 'ModeSepolia',
 }
 
 export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
@@ -36,10 +38,12 @@ export const loadPoolConfig = (configName: ConfigNames): PoolConfiguration => {
       return MaticConfig;
     case ConfigNames.Mode:
       return ModeConfig;
+    case ConfigNames.ModeSepolia:
+      return ModeSepoliaConfig;
     case ConfigNames.Amm:
       return AmmConfig;
-      case ConfigNames.Avalanche:
-        return AvalancheConfig;
+    case ConfigNames.Avalanche:
+      return AvalancheConfig;
     case ConfigNames.Commons:
       return CommonsConfig;
     default:
@@ -72,7 +76,10 @@ export const getReservesConfigByPool = (pool: AavePools): iMultiPoolsAssets<IRes
       },
       [AavePools.mode]: {
         ...ModeConfig.ReservesConfig,
-      }
+      },
+      [AavePools.modeSepolia]: {
+        ...ModeSepoliaConfig.ReservesConfig,
+      },
     },
     pool
   );

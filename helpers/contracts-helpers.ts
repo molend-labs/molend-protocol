@@ -1,38 +1,38 @@
-import { Contract, Signer, utils, ethers, BigNumberish } from 'ethers';
-import { signTypedData_v4 } from 'eth-sig-util';
-import { fromRpcSig, ECDSASignature } from 'ethereumjs-util';
-import BigNumber from 'bignumber.js';
-import { getDb, DRE, waitForTx, notFalsyOrZeroAddress } from './misc-utils';
-import {
-  tEthereumAddress,
-  eContractid,
-  tStringTokenSmallUnits,
-  eEthereumNetwork,
-  AavePools,
-  iParamsPerNetwork,
-  iParamsPerPool,
-  ePolygonNetwork,
-  eXDaiNetwork,
-  eNetwork,
-  iEthereumParamsPerNetwork,
-  iPolygonParamsPerNetwork,
-  iXDaiParamsPerNetwork,
-  iAvalancheParamsPerNetwork,
-  eAvalancheNetwork,
-  eModeNetwork,
-  iModeParamsPerNetwork,
-} from './types';
-import { MintableERC20 } from '../types/MintableERC20';
-import { Artifact } from 'hardhat/types';
 import { Artifact as BuidlerArtifact } from '@nomiclabs/buidler/types';
-import { verifyEtherscanContract } from './etherscan-verification';
-import { getFirstSigner, getIErc20Detailed } from './contracts-getters';
-import { usingTenderly, verifyAtTenderly } from './tenderly-utils';
-import { usingPolygon, verifyAtPolygon } from './polygon-utils';
+import BigNumber from 'bignumber.js';
+import { signTypedData_v4 } from 'eth-sig-util';
+import { ECDSASignature, fromRpcSig } from 'ethereumjs-util';
+import { BigNumberish, Contract, Signer, ethers, utils } from 'ethers';
+import { Artifact } from 'hardhat/types';
+import { MintableERC20 } from '../types/MintableERC20';
 import { ConfigNames, loadPoolConfig } from './configuration';
 import { ZERO_ADDRESS } from './constants';
+import { getFirstSigner, getIErc20Detailed } from './contracts-getters';
 import { getDefenderRelaySigner, usingDefender } from './defender-utils';
-import ModeConfig from '../markets/mode';
+import { verifyEtherscanContract } from './etherscan-verification';
+import { DRE, getDb, notFalsyOrZeroAddress, waitForTx } from './misc-utils';
+import { usingPolygon, verifyAtPolygon } from './polygon-utils';
+import { usingTenderly, verifyAtTenderly } from './tenderly-utils';
+import {
+  AavePools,
+  eAvalancheNetwork,
+  eContractid,
+  eEthereumNetwork,
+  eModeNetwork,
+  eNetwork,
+  ePolygonNetwork,
+  eXDaiNetwork,
+  iAvalancheParamsPerNetwork,
+  iEthereumParamsPerNetwork,
+  iModeParamsPerNetwork,
+  iModeSepoliaParamsPerNetwork,
+  iParamsPerNetwork,
+  iParamsPerPool,
+  iPolygonParamsPerNetwork,
+  iXDaiParamsPerNetwork,
+  tEthereumAddress,
+  tStringTokenSmallUnits,
+} from './types';
 
 export type MockTokenMap = { [symbol: string]: MintableERC20 };
 
@@ -152,6 +152,7 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
     param as iEthereumParamsPerNetwork<T>;
   const { matic, mumbai } = param as iPolygonParamsPerNetwork<T>;
   const { mode } = param as iModeParamsPerNetwork<T>;
+  const { modeSepolia } = param as iModeSepoliaParamsPerNetwork<T>;
   const { xdai } = param as iXDaiParamsPerNetwork<T>;
   const { avalanche, fuji } = param as iAvalancheParamsPerNetwork<T>;
   if (process.env.FORK) {
@@ -185,6 +186,8 @@ export const getParamPerNetwork = <T>(param: iParamsPerNetwork<T>, network: eNet
       return fuji;
     case eModeNetwork.mode:
       return mode;
+    case eModeNetwork.modeSepolia:
+      return modeSepolia;
   }
 };
 
@@ -198,7 +201,10 @@ export const getOptionalParamAddressPerNetwork = (
   return getParamPerNetwork(param, network);
 };
 
-export const getParamPerPool = <T>({ proto, amm, matic, avalanche, mode }: iParamsPerPool<T>, pool: AavePools) => {
+export const getParamPerPool = <T>(
+  { proto, amm, matic, avalanche, mode, modeSepolia }: iParamsPerPool<T>,
+  pool: AavePools
+) => {
   switch (pool) {
     case AavePools.proto:
       return proto;
@@ -210,6 +216,8 @@ export const getParamPerPool = <T>({ proto, amm, matic, avalanche, mode }: iPara
       return avalanche;
     case AavePools.mode:
       return mode;
+    case AavePools.modeSepolia:
+      return modeSepolia;
     default:
       return proto;
   }
