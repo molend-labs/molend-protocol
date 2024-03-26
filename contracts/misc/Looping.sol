@@ -4,9 +4,9 @@ pragma solidity 0.6.12;
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {ILendingPool} from '../../interfaces/ILendingPool.sol';
-import {ILendingPoolAddressesProvider} from '../../interfaces/ILendingPoolAddressesProvider.sol';
-import {IWETH} from "../../misc/interfaces/IWETH.sol";
+import {ILendingPool} from '../interfaces/ILendingPool.sol';
+import {ILendingPoolAddressesProvider} from '../interfaces/ILendingPoolAddressesProvider.sol';
+import {IWETH} from "../misc/interfaces/IWETH.sol";
 
 contract Looping {
   using SafeERC20 for IERC20;
@@ -38,10 +38,6 @@ contract Looping {
 
     IERC20(asset).safeTransferFrom(user, address(this), amount);
 
-    if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
-        require(IERC20(asset).approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
-    }
-
     internalLoop(user, asset, amount, borrowRatio, loopCount);
   }
 
@@ -56,10 +52,6 @@ contract Looping {
     require(amount > 0, "Need to attach Ether");
     WETH.deposit{value: amount}();
 
-    if (WETH.allowance(address(this), address(LENDING_POOL)) == 0) {
-        require(WETH.approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
-    }
-
     internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
   }
 
@@ -70,6 +62,10 @@ contract Looping {
     uint256 borrowRatio,
     uint256 loopCount
   ) internal {
+    if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
+        require(IERC20(asset).approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
+    }
+
     for (uint256 i = 0; i < loopCount; i++) {
       LENDING_POOL.deposit(asset, amount, user, 0);
       amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
