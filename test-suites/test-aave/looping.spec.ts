@@ -3,11 +3,38 @@ import { expect } from 'chai';
 import { BigNumber } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { PERCENTAGE_FACTOR } from '../../helpers/constants';
+import { deployMintableERC20 } from '../../helpers/contracts-deployments';
+import { ProtocolErrors } from '../../helpers/types';
 
 const MAX_LOOP_COUNT = 10;
 
 makeSuite('Looping', (env: TestEnv) => {
-  it.only('(User 1) Looping DAI with 3x leverage', async () => {
+  it.only('Loop unsupported token', async () => {
+    const { looping, users } = env;
+    const user = users[0];
+    const token = await deployMintableERC20(['Unsupported', 'Unsupported', '18']);
+
+    const principalTokenAmount = parseUnits('500', 18); // 500 Token
+    const leverage = BigNumber.from(PERCENTAGE_FACTOR).mul(3); // 3x
+    const { borrowRatio, loopCount } = calcLoopParams({
+      leverageRaw: leverage,
+      maxLtvRaw: BigNumber.from(8000), // 80%
+    });
+
+    // Mint DAI for user
+    await token.connect(user.signer).mint(principalTokenAmount);
+    await token.connect(user.signer).approve(looping.address, principalTokenAmount);
+
+    // User DAI balance
+    expect(await token.balanceOf(user.address)).eq(principalTokenAmount);
+
+    // Loop
+    expect(
+      looping.connect(user.signer).loop(token.address, principalTokenAmount, borrowRatio, loopCount)
+    ).revertedWith(ProtocolErrors.VL_NO_ACTIVE_RESERVE);
+  });
+
+  it('(User 1) Looping DAI with 3x leverage', async () => {
     const { users, helpersContract, looping, dai, vDai } = env;
     const user = users[1];
 
@@ -60,7 +87,7 @@ makeSuite('Looping', (env: TestEnv) => {
     );
   });
 
-  it.only('(User 2) Looping DAI with max leverage', async () => {
+  it('(User 2) Looping DAI with max leverage', async () => {
     const { pool, users, helpersContract, looping, dai, vDai } = env;
     const user = users[2];
 
@@ -117,7 +144,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (DAI):', userAccountData.healthFactor);
   });
 
-  it.only('(User 2) Looping USDC with max leverage with initial debt (DAI)', async () => {
+  it('(User 2) Looping USDC with max leverage with initial debt (DAI)', async () => {
     const { pool, users, helpersContract, looping, usdc, vUSDC } = env;
     const user = users[2]; // user 2 has loop the DAI with max leverage
 
@@ -174,7 +201,7 @@ makeSuite('Looping', (env: TestEnv) => {
     console.log('HealthFactor (DAI + USDC):', userAccountData.healthFactor);
   });
 
-  it.only('(User 3) Looping ETH with 3x leverage', async () => {
+  it('(User 3) Looping ETH with 3x leverage', async () => {
     const { users, helpersContract, looping, weth, vWETH } = env;
     const user = users[3];
 
@@ -213,7 +240,7 @@ makeSuite('Looping', (env: TestEnv) => {
     );
   });
 
-  it.only('(User 4) Looping ETH with max leverage', async () => {
+  it('(User 4) Looping ETH with max leverage', async () => {
     const { pool, users, helpersContract, looping, weth, vWETH } = env;
     const user = users[4];
 
