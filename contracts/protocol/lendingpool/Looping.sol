@@ -6,7 +6,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ILendingPool} from '../../interfaces/ILendingPool.sol';
 import {ILendingPoolAddressesProvider} from '../../interfaces/ILendingPoolAddressesProvider.sol';
-import "../../misc/interfaces/IWETH.sol";
+import {IWETH} from "../../misc/interfaces/IWETH.sol";
 
 contract Looping {
   using SafeERC20 for IERC20;
@@ -31,7 +31,7 @@ contract Looping {
     address asset,
     uint256 amount,
     uint256 borrowRatio,
-    uint256 borrowCount
+    uint256 loopCount
   ) external {
     require(borrowRatio <= RATIO_DIVISOR, "Invalid ratio");
     address user = msg.sender;
@@ -39,15 +39,15 @@ contract Looping {
     IERC20(asset).safeTransferFrom(user, address(this), amount);
 
     if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
-        IERC20(asset).safeApprove(address(LENDING_POOL), uint256(-1));
+        require(IERC20(asset).approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
     }
 
-    internalLoop(user, asset, amount, borrowRatio, borrowCount);
+    internalLoop(user, asset, amount, borrowRatio, loopCount);
   }
 
   function loopETH(
     uint256 borrowRatio,
-    uint256 borrowCount
+    uint256 loopCount
   ) external payable {
     require(borrowRatio <= RATIO_DIVISOR, "Invalid ratio");
     address user = msg.sender;
@@ -56,7 +56,11 @@ contract Looping {
     require(amount > 0, "Need to attach Ether");
     WETH.deposit{value: amount}();
 
-    internalLoop(user, address(WETH), amount, borrowRatio, borrowCount);
+    if (WETH.allowance(address(this), address(LENDING_POOL)) == 0) {
+        require(WETH.approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
+    }
+
+    internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
   }
 
   function internalLoop(
@@ -64,9 +68,9 @@ contract Looping {
     address asset,
     uint256 amount,
     uint256 borrowRatio,
-    uint256 borrowCount
+    uint256 loopCount
   ) internal {
-    for (uint256 i = 0; i < borrowCount; i++) {
+    for (uint256 i = 0; i < loopCount; i++) {
       LENDING_POOL.deposit(asset, amount, user, 0);
       amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
       LENDING_POOL.borrow(asset, amount, 2, 0, user);
