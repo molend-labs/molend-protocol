@@ -63,57 +63,57 @@ export const CommonsConfig: ICommonConfiguration = {
 
   // If PoolAdmin/emergencyAdmin is set, will take priority over PoolAdminIndex/emergencyAdminIndex
   PoolAdmin: {
-    [eModeNetwork.mode]: undefined,
+    [eModeNetwork.modeTestnet]: undefined,
   },
   PoolAdminIndex: 0,
   EmergencyAdminIndex: 0,
   EmergencyAdmin: {
-    [eModeNetwork.mode]: undefined,
+    [eModeNetwork.modeTestnet]: undefined,
   },
   LendingPool: {
-    [eModeNetwork.mode]: '',
+    [eModeNetwork.modeTestnet]: '',
   },
   LendingPoolConfigurator: {
-    [eModeNetwork.mode]: '',
+    [eModeNetwork.modeTestnet]: '',
   },
-  // TODO mode
+  // TODO modeTestnet
   ProviderRegistry: {
     // [ePolygonNetwork.mumbai]: '0xE6ef11C967898F9525D550014FDEdCFAB63536B5',
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
-  // TODO mode
+  // TODO modeTestnet
   ProviderRegistryOwner: {
     // [ePolygonNetwork.mumbai]: '0x943E44157dC0302a5CEb172374d1749018a00994',
     // [ePolygonNetwork.matic]: '0xD7D86236d6c463521920fCC50A9CB56f8C8Bf008',
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
-  // TODO mode
+  // TODO modeTestnet
   LendingRateOracle: {
     // [ePolygonNetwork.mumbai]: '0xC661e1445F9a8E5FD3C3dbCa0A0A2e8CBc79725D',
     // [ePolygonNetwork.matic]: '0x17F73aEaD876CC4059089ff815EDA37052960dFB',
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
-  // TODO mode
+  // TODO modeTestnet
   LendingPoolCollateralManager: {
     // [ePolygonNetwork.mumbai]: '0x2A7004B21c49253ca8DF923406Fed9a02AA86Ba0',
     // [ePolyAaveCollector deployed: 0xd83C5e9a0D6D521a9E23D25Df1862A23134e1803gonNetwork.matic]: '0xA39599424642D9fD35e475EF802EddF798dc555B',
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
   TokenDistributor: {
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
   WethGateway: {
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
   AaveOracle: {
-    [eModeNetwork.mode]: ''
+    [eModeNetwork.modeTestnet]: ''
   },
   FallbackOracle: {
-    [eModeNetwork.mode]: ZERO_ADDRESS,
+    [eModeNetwork.modeTestnet]: ZERO_ADDRESS,
   },
-  // TODO mode
+  // TODO modeTestnet
   ChainlinkAggregator: {
-    [eModeNetwork.mode]: {
+    [eModeNetwork.modeTestnet]: {
       USDT: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
       USDC: '0xa204F4A3d167dF2621EF092915dC4D0777f8A83C',
       USD: '0x5608649D5bB1d444e95fcc81D570fbE8495CC179',
@@ -122,27 +122,27 @@ export const CommonsConfig: ICommonConfiguration = {
     },
   },
   ReserveAssets: {
-    [eModeNetwork.mode]: {},
+    [eModeNetwork.modeTestnet]: {},
   },
   ReservesConfig: {},
   ATokenDomainSeparator: {
-    [eModeNetwork.mode]: '',
+    [eModeNetwork.modeTestnet]: '',
   },
-  // TODO mode
+  // TODO modeTestnet
   WETH: {
-    [eModeNetwork.mode]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
+    [eModeNetwork.modeTestnet]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
     // [ePolygonNetwork.matic]: '0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619',
   },
-  // TODO mode
+  // TODO modeTestnet
   WrappedNativeToken: {
-    [eModeNetwork.mode]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
+    [eModeNetwork.modeTestnet]: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
   },
-  // TODO mode
+  // TODO modeTestnet
   ReserveFactorTreasuryAddress: {
-    [eModeNetwork.mode]: '0x368fd26b1d435bcC2e0E1c1160B63ED7dBCabdd5',
+    [eModeNetwork.modeTestnet]: '0x368fd26b1d435bcC2e0E1c1160B63ED7dBCabdd5',
   },
-  // TODO mode
+  // TODO modeTestnet
   IncentivesController: {
-    [eModeNetwork.mode]: '0x0000000000000000000000000000000000000000',
+    [eModeNetwork.modeTestnet]: '0x0000000000000000000000000000000000000000',
   },
 };

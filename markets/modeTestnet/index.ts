@@ -25,7 +25,7 @@ export const ModeTestnetConfig: IModeConfiguration = {
   },
   // TODO mode
   ReserveAssets: {
-    [eModeNetwork.mode]: {
+    [eModeNetwork.modeTestnet]: {
       USDC: '0x6c6D1ebabc51a9E0Cd1E87124645B028417c90c4',
       USDT: '0x5306023Eb69ee9dDd5e8a54eA63007f7D984071F',
       WETH: '0xcc9ffcfBDFE629e9C62776fF01a75235F466794E',
