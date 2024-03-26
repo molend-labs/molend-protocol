@@ -1,5 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { eEthereumNetwork } from './types';
 
 // ----------------
 // MATH
@@ -86,7 +85,7 @@ export const chainlinkAggregatorProxy = {
   tenderly: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
   // TODO ETH oracle
   mode: '0x5290b68e09b4f79F63ed01710003E7949FB32B77',
-  modeTestnet: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
+  modeSepolia: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
   hardhat: '0x',
 };
 
@@ -100,6 +99,6 @@ export const chainlinkEthUsdAggregatorProxy = {
   tenderly: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
   // TODO ETH oracle
   mode: '0x5290b68e09b4f79F63ed01710003E7949FB32B77',
-  modeTestnet: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
+  modeSepolia: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
   hardhat: '0x',
 };

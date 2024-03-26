@@ -1,34 +1,32 @@
-import path from 'path';
 import fs from 'fs';
 import { HardhatUserConfig } from 'hardhat/types';
+import path from 'path';
 // @ts-ignore
-import { accounts } from './test-wallets.js';
 import {
-  eModeNetwork,
+  NETWORKS_DEFAULT_GAS,
+  NETWORKS_RPC_URL,
+  buildForkConfig
+} from './helper-hardhat-config';
+import { BUIDLEREVM_CHAINID, COVERAGE_CHAINID } from './helpers/buidler-constants';
+import {
   eAvalancheNetwork,
   eEthereumNetwork,
+  eModeNetwork,
   eNetwork,
   ePolygonNetwork,
   eXDaiNetwork,
 } from './helpers/types';
-import { BUIDLEREVM_CHAINID, COVERAGE_CHAINID } from './helpers/buidler-constants';
-import {
-  NETWORKS_RPC_URL,
-  NETWORKS_DEFAULT_GAS,
-  BLOCK_TO_FORK,
-  buildForkConfig,
-} from './helper-hardhat-config';
+import { accounts } from './test-wallets.js';
 
 require('dotenv').config();
 
 import '@nomiclabs/hardhat-ethers';
 import '@nomiclabs/hardhat-waffle';
-import 'molend-hardhat-etherscan';
+import '@tenderly/hardhat-tenderly';
 import 'hardhat-gas-reporter';
 import 'hardhat-typechain';
-import '@tenderly/hardhat-tenderly';
+import 'molend-hardhat-etherscan';
 import 'solidity-coverage';
-import { fork } from 'child_process';
 
 const SKIP_LOAD = process.env.SKIP_LOAD === 'true';
 const DEFAULT_BLOCK_GAS_LIMIT = 8000000;
@@ -109,7 +107,7 @@ const buidlerConfig: HardhatUserConfig = {
     mumbai: getCommonNetworkConfig(ePolygonNetwork.mumbai, 80001),
     // mode: getCommonNetworkConfig(eModeNetwork.mode, 31337),
     mode: getCommonNetworkConfig(eModeNetwork.mode, 34443),
-    modeTestnet: getCommonNetworkConfig(eModeNetwork.modeTestnet, 919),
+    modeSepolia: getCommonNetworkConfig(eModeNetwork.modeSepolia, 919),
     xdai: getCommonNetworkConfig(eXDaiNetwork.xdai, 100),
     avalanche: getCommonNetworkConfig(eAvalancheNetwork.avalanche, 43114),
     fuji: getCommonNetworkConfig(eAvalancheNetwork.fuji, 43113),

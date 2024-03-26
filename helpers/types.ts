@@ -37,7 +37,7 @@ export enum eAvalancheNetwork {
 
 export enum eModeNetwork {
   mode = 'mode',
-  modeTestnet = 'modeTestnet',
+  modeSepolia = 'modeSepolia',
 }
 
 export enum EthereumNetworkNames {
@@ -50,7 +50,7 @@ export enum EthereumNetworkNames {
   avalanche = 'avalanche',
   fuji = 'fuji',
   mode = 'mode',
-  modeTestnet = 'modeTestnet',
+  modeSepolia = 'modeSepolia',
 }
 
 export enum AavePools {
@@ -59,7 +59,7 @@ export enum AavePools {
   amm = 'amm',
   avalanche = 'avalanche',
   mode = 'mode',
-  modeTestnet = 'modeTestnet',
+  modeSepolia = 'modeSepolia',
 }
 
 export enum eContractid {
@@ -430,14 +430,14 @@ export type iParamsPerNetwork<T> =
   | iPolygonParamsPerNetwork<T>
   | iXDaiParamsPerNetwork<T>
   | iModeParamsPerNetwork<T>
-  | iModeTestnetParamsPerNetwork<T>
+  | iModeSepoliaParamsPerNetwork<T>
   | iAvalancheParamsPerNetwork<T>;
 
 export interface iParamsPerNetworkAll<T>
   extends iEthereumParamsPerNetwork<T>,
     iPolygonParamsPerNetwork<T>,
     iModeParamsPerNetwork<T>,
-    iModeTestnetParamsPerNetwork<T>,
+    iModeSepoliaParamsPerNetwork<T>,
     iXDaiParamsPerNetwork<T> {}
 
 export interface iEthereumParamsPerNetwork<T> {
@@ -468,8 +468,8 @@ export interface iModeParamsPerNetwork<T> {
   [eModeNetwork.mode]: T;
 }
 
-export interface iModeTestnetParamsPerNetwork<T> {
-  [eModeNetwork.modeTestnet]: T;
+export interface iModeSepoliaParamsPerNetwork<T> {
+  [eModeNetwork.modeSepolia]: T;
 }
 
 export interface iParamsPerPool<T> {
@@ -478,7 +478,7 @@ export interface iParamsPerPool<T> {
   [AavePools.amm]: T;
   [AavePools.avalanche]: T;
   [AavePools.mode]: T;
-  [AavePools.modeTestnet]: T;
+  [AavePools.modeSepolia]: T;
 }
 
 export interface iBasicDistributionParams {
