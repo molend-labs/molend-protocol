@@ -56,6 +56,9 @@ export const CommonsConfig: ICommonConfiguration = {
     WBTC: {
       borrowRate: oneRay.multipliedBy(0.03).toFixed(),
     },
+    STONE: {
+      borrowRate: oneRay.multipliedBy(0.03).toFixed(),
+    },
   },
   // ----------------
   // COMMON PROTOCOL ADDRESSES ACROSS POOLS
@@ -118,6 +121,7 @@ export const CommonsConfig: ICommonConfiguration = {
       USDC: '0xfb6D1C2e9cbFCf6190F30D1766935f3B0057305b',
       USD: '0x86592C8141Aec8f7B836f4559614233b253c55F1',
       WETH: '0x5290b68e09b4f79F63ed01710003E7949FB32B77',
+      STONE: '0x5522CAA025EC6eB6540E734699FBfae68F1CD014',
     },
   },
   ReserveAssets: {

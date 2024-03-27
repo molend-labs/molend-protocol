@@ -34,3 +34,14 @@ export const rateStrategyWETH: IInterestRateStrategyParams = {
   stableRateSlope1: '0',
   stableRateSlope2: '0',
 };
+
+// STONE
+export const rateStrategySTONE: IInterestRateStrategyParams = {
+  name: "rateStrategySTONE",
+  optimalUtilizationRate: new BigNumber(0.3).multipliedBy(oneRay).toFixed(),
+  baseVariableBorrowRate: new BigNumber(0).multipliedBy(oneRay).toFixed(),
+  variableRateSlope1: new BigNumber(0.15).multipliedBy(oneRay).toFixed(),
+  variableRateSlope2: new BigNumber(2).multipliedBy(oneRay).toFixed(),
+  stableRateSlope1: '0',
+  stableRateSlope2: '0',
+};

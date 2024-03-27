@@ -5,6 +5,7 @@ import {
   rateStrategyWETH,
   rateStrategyUSDC,
   rateStrategyUSDT,
+  rateStrategySTONE,
 } from './rateStrategies';
 
 export const strategyUSDC: IReserveParams = {
@@ -35,6 +36,18 @@ export const strategyWETH: IReserveParams = {
   strategy: rateStrategyWETH,
   baseLTVAsCollateral: '7000',
   liquidationThreshold: '7500',
+  liquidationBonus: '11500',
+  borrowingEnabled: true,
+  stableBorrowRateEnabled: false,
+  reserveDecimals: '18',
+  aTokenImpl: eContractid.AToken,
+  reserveFactor: '6500',
+};
+
+export const strategySTONE: IReserveParams = {
+  strategy: rateStrategySTONE,
+  baseLTVAsCollateral: '3000',
+  liquidationThreshold: '3500',
   liquidationBonus: '11500',
   borrowingEnabled: true,
   stableBorrowRateEnabled: false,
