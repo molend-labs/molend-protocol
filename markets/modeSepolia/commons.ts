@@ -117,6 +117,7 @@ export const CommonsConfig: ICommonConfiguration = {
       USD: '0x5608649D5bB1d444e95fcc81D570fbE8495CC179',
       WETH: '0x0201e9937DcCa9dC61315C2f44C2966cC0a33054',
       WSTETH: '0xF0dd0e7208db917121FC3B18315602a3cA120Fe8',
+      STONE: '0x377DF0f000E3A45C9aC8941858be07ba248b6221',
     },
   },
   ReserveAssets: {
