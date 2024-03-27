@@ -6,7 +6,7 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {ILendingPool} from '../interfaces/ILendingPool.sol';
 import {ILendingPoolAddressesProvider} from '../interfaces/ILendingPoolAddressesProvider.sol';
-import {IWETH} from "../misc/interfaces/IWETH.sol";
+import {IWETH} from "./interfaces/IWETH.sol";
 
 contract Looping {
   using SafeERC20 for IERC20;
