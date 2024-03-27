@@ -8,6 +8,7 @@ import {
   HALF_PERCENTAGE,
   PERCENTAGE_FACTOR,
 } from '../../../../helpers/constants';
+import { ethers } from 'ethers';
 
 declare module 'bignumber.js' {
   interface BigNumber {

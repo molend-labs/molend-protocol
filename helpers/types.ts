@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js';
 
+export type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+
 export interface SymbolMap<T> {
   [symbol: string]: T;
 }
@@ -113,6 +115,7 @@ export enum eContractid {
   MockParaSwapAugustus = 'MockParaSwapAugustus',
   MockParaSwapAugustusRegistry = 'MockParaSwapAugustusRegistry',
   ParaSwapLiquiditySwapAdapter = 'ParaSwapLiquiditySwapAdapter',
+  Looping = 'Looping',
 }
 
 /*

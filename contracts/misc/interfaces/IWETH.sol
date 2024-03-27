@@ -8,6 +8,8 @@ interface IWETH {
 
   function approve(address guy, uint256 wad) external returns (bool);
 
+  function allowance(address owner, address spender) external view returns (uint256);
+
   function transferFrom(
     address src,
     address dst,

@@ -53,6 +53,7 @@ import {
   FlashLiquidationAdapterFactory,
   UiPoolDataProviderFactory,
   UiIncentiveDataProviderFactory,
+  LoopingFactory,
 } from '../types';
 import {
   withSaveAndVerify,
@@ -781,6 +782,14 @@ export const deployParaSwapLiquiditySwapAdapter = async (
   withSaveAndVerify(
     await new ParaSwapLiquiditySwapAdapterFactory(await getFirstSigner()).deploy(...args),
     eContractid.ParaSwapLiquiditySwapAdapter,
+    args,
+    verify
+  );
+
+export const deployLooping = async (args: [tEthereumAddress, tEthereumAddress], verify?: boolean) =>
+  withSaveAndVerify(
+    await new LoopingFactory(await getFirstSigner()).deploy(...args),
+    eContractid.Looping,
     args,
     verify
   );
