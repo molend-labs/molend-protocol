@@ -17,6 +17,9 @@ contract Looping {
   ILendingPool public immutable LENDING_POOL;
   IWETH internal immutable WETH;
 
+  event Loop (address user, address asset, uint256 amount, uint256 borrowed);
+  event LoopETH (address user, uint256 amount, uint256 borrowed);
+
   constructor(ILendingPoolAddressesProvider provider, IWETH weth) public {
     ADDRESSES_PROVIDER = provider;
     LENDING_POOL = ILendingPool(provider.getLendingPool());
@@ -38,7 +41,8 @@ contract Looping {
 
     IERC20(asset).safeTransferFrom(user, address(this), amount);
 
-    internalLoop(user, asset, amount, borrowRatio, loopCount);
+    uint256 borrowed = internalLoop(user, asset, amount, borrowRatio, loopCount);
+    emit Loop(user, asset, amount, borrowed);
   }
 
   function loopETH(
@@ -52,7 +56,8 @@ contract Looping {
     require(amount > 0, "Need to attach Ether");
     WETH.deposit{value: amount}();
 
-    internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
+    uint256 borrowed = internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
+    emit LoopETH(user, amount, borrowed);
   }
 
   function internalLoop(
@@ -61,17 +66,22 @@ contract Looping {
     uint256 amount,
     uint256 borrowRatio,
     uint256 loopCount
-  ) internal {
+  ) internal returns (uint256) {
     if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
         require(IERC20(asset).approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
     }
+
+    uint256 borrowed = 0;
 
     for (uint256 i = 0; i < loopCount; i++) {
       LENDING_POOL.deposit(asset, amount, user, 0);
       amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
       LENDING_POOL.borrow(asset, amount, 2, 0, user);
+      borrowed += amount;
     }
 
     LENDING_POOL.deposit(asset, amount, user, 0);
+
+    return borrowed;
   }
 }
