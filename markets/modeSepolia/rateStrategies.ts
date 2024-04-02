@@ -56,3 +56,14 @@ export const rateStrategySTONE: IInterestRateStrategyParams = {
   stableRateSlope1: '0',
   stableRateSlope2: '0',
 };
+
+// EZETH
+export const rateStrategyEZETH: IInterestRateStrategyParams = {
+  name: "rateStrategyEZETH",
+  optimalUtilizationRate: new BigNumber(0.3).multipliedBy(oneRay).toFixed(),
+  baseVariableBorrowRate: new BigNumber(0).multipliedBy(oneRay).toFixed(),
+  variableRateSlope1: new BigNumber(0.15).multipliedBy(oneRay).toFixed(),
+  variableRateSlope2: new BigNumber(2).multipliedBy(oneRay).toFixed(),
+  stableRateSlope1: '0',
+  stableRateSlope2: '0',
+};
