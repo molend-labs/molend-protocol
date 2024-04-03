@@ -2,6 +2,7 @@ import { IModeConfiguration, eModeNetwork } from '../../helpers/types';
 
 import { CommonsConfig } from './commons';
 import {
+  strategyEZETH,
   strategySTONE,
   strategyUSDC,
   strategyUSDT,
@@ -21,6 +22,7 @@ export const ModeConfig: IModeConfiguration = {
     USDT: strategyUSDT,
     WETH: strategyWETH,
     STONE: strategySTONE,
+    EZETH: strategyEZETH,
   },
   // TODO mode
   ReserveAssets: {
@@ -29,6 +31,7 @@ export const ModeConfig: IModeConfiguration = {
       USDT: '0xf0F161fDA2712DB8b566946122a5af183995e2eD',
       WETH: '0x4200000000000000000000000000000000000006',
       STONE: '0x80137510979822322193FC997d400D5A6C747bf7',
+      EZETH: '0x2416092f143378750bb29b79eD961ab195CcEea5',
     },
   },
 };
