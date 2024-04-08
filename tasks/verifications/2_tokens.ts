@@ -106,14 +106,14 @@ task('verify:tokens', 'Deploy oracles for dev enviroment')
       const aToken = await getAddressById(`a${token}`);
 
       if (aToken) {
-        console.log(`\n-- Verifying aToken for ${token}...\n`);
+        console.log(`\n-- Verifying aToken Impl for ${token}...\n`);
         await verifyContract(eContractid.AToken, await getAToken(aToken), [
-          lendingPoolProxy.address,
-          tokenAddress,
-          treasuryAddress,
-          `Aave interest bearing ${token}`,
-          `a${token}`,
-          ZERO_ADDRESS,
+          // lendingPoolProxy.address,
+          // tokenAddress,
+          // treasuryAddress,
+          // `Molend Mode Market ${token}`,
+          // `am${token}`,
+          // ZERO_ADDRESS,
         ]);
       } else {
         console.error(`Skipping aToken verify for ${token}. Missing address at JSON DB.`);
