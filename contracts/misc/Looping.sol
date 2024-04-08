@@ -43,8 +43,8 @@ contract Looping {
 
     IERC20(asset).safeTransferFrom(user, address(this), amount);
 
-    (uint256 deposited, uint256 borrowed) = internalLoop(lendingPool(), user, asset, amount, borrowRatio, loopCount);
-    emit Loop(user, asset, amount, deposited, borrowed, borrowRatio, loopCount);
+    InternalLoopVariables memory variables = internalLoop(user, asset, amount, borrowRatio, loopCount);
+    emit Loop(user, asset, amount, variables.deposited, variables.borrowed, borrowRatio, loopCount);
   }
 
   function loopETH(
@@ -58,36 +58,44 @@ contract Looping {
     require(amount > 0, "Need to attach Ether");
     WETH.deposit{value: amount}();
 
-    (uint256 deposited, uint256 borrowed) = internalLoop(lendingPool(), user, address(WETH), amount, borrowRatio, loopCount);
-    emit LoopETH(user, amount, deposited, borrowed, borrowRatio, loopCount);
+    InternalLoopVariables memory variables = internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
+    emit LoopETH(user, amount, variables.deposited, variables.borrowed, borrowRatio, loopCount);
   }
 
   function internalLoop(
-    ILendingPool lendingPool,
     address user,
     address asset,
     uint256 amount,
     uint256 borrowRatio,
     uint256 loopCount
-  ) internal returns (uint256, uint256) {
+  ) internal returns (InternalLoopVariables memory) {
+    ILendingPool lendingPool = lendingPool();
+
     if (IERC20(asset).allowance(address(this), address(lendingPool)) == 0) {
         IERC20(asset).safeApprove(address(lendingPool), uint256(-1));
     }
 
-    uint256 deposited = 0;
-    uint256 borrowed = 0;
+    InternalLoopVariables memory variables = InternalLoopVariables({
+      deposited: 0,
+      borrowed: 0
+    });
 
     for (uint256 i = 0; i < loopCount; i++) {
       lendingPool.deposit(asset, amount, user, 0);
-      deposited += amount;
+      variables.deposited += amount;
       amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
       lendingPool.borrow(asset, amount, 2, 0, user);
-      borrowed += amount;
+      variables.borrowed += amount;
     }
 
     lendingPool.deposit(asset, amount, user, 0);
-    deposited += amount;
+    variables.deposited += amount;
 
-    return (deposited, borrowed);
+    return variables;
   }
+}
+
+struct InternalLoopVariables {
+  uint256 deposited;
+  uint256 borrowed;
 }
