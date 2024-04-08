@@ -9,6 +9,11 @@ import {ILendingPoolAddressesProvider} from '../interfaces/ILendingPoolAddresses
 import {IWETH} from "./interfaces/IWETH.sol";
 
 contract Looping {
+  struct InternalLoopVariables {
+    uint256 deposited;
+    uint256 borrowed;
+  }
+
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
   uint256 public constant RATIO_DIVISOR = 10000;
@@ -93,9 +98,4 @@ contract Looping {
 
     return variables;
   }
-}
-
-struct InternalLoopVariables {
-  uint256 deposited;
-  uint256 borrowed;
 }
