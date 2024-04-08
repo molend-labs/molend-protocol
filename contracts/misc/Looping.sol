@@ -14,7 +14,6 @@ contract Looping {
   uint256 public constant RATIO_DIVISOR = 10000;
 
   ILendingPoolAddressesProvider public immutable ADDRESSES_PROVIDER;
-  ILendingPool public immutable LENDING_POOL;
   IWETH internal immutable WETH;
 
   event Loop (address user, address asset, uint256 principal, uint256 deposited, uint256 borrowed, uint256 borrowRatio, uint256 loopCount);
@@ -22,8 +21,11 @@ contract Looping {
 
   constructor(ILendingPoolAddressesProvider provider, IWETH weth) public {
     ADDRESSES_PROVIDER = provider;
-    LENDING_POOL = ILendingPool(provider.getLendingPool());
     WETH = weth;
+  }
+
+  function lendingPool() public view returns (ILendingPool) {
+    return ILendingPool(ADDRESSES_PROVIDER.getLendingPool());
   }
 
   function getWETHAddress() external view returns (address) {
@@ -41,7 +43,7 @@ contract Looping {
 
     IERC20(asset).safeTransferFrom(user, address(this), amount);
 
-    (uint256 deposited, uint256 borrowed) = internalLoop(user, asset, amount, borrowRatio, loopCount);
+    (uint256 deposited, uint256 borrowed) = internalLoop(lendingPool(), user, asset, amount, borrowRatio, loopCount);
     emit Loop(user, asset, amount, deposited, borrowed, borrowRatio, loopCount);
   }
 
@@ -56,33 +58,34 @@ contract Looping {
     require(amount > 0, "Need to attach Ether");
     WETH.deposit{value: amount}();
 
-    (uint256 deposited, uint256 borrowed) = internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
+    (uint256 deposited, uint256 borrowed) = internalLoop(lendingPool(), user, address(WETH), amount, borrowRatio, loopCount);
     emit LoopETH(user, amount, deposited, borrowed, borrowRatio, loopCount);
   }
 
   function internalLoop(
+    ILendingPool lendingPool,
     address user,
     address asset,
     uint256 amount,
     uint256 borrowRatio,
     uint256 loopCount
   ) internal returns (uint256, uint256) {
-    if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
-        require(IERC20(asset).approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
+    if (IERC20(asset).allowance(address(this), address(lendingPool)) == 0) {
+        require(IERC20(asset).approve(address(lendingPool), uint256(-1)), "Failed to approve");
     }
 
     uint256 deposited = 0;
     uint256 borrowed = 0;
 
     for (uint256 i = 0; i < loopCount; i++) {
-      LENDING_POOL.deposit(asset, amount, user, 0);
+      lendingPool.deposit(asset, amount, user, 0);
       deposited += amount;
       amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
-      LENDING_POOL.borrow(asset, amount, 2, 0, user);
+      lendingPool.borrow(asset, amount, 2, 0, user);
       borrowed += amount;
     }
 
-    LENDING_POOL.deposit(asset, amount, user, 0);
+    lendingPool.deposit(asset, amount, user, 0);
     deposited += amount;
 
     return (deposited, borrowed);
