@@ -71,7 +71,7 @@ contract Looping {
     uint256 loopCount
   ) internal returns (uint256, uint256) {
     if (IERC20(asset).allowance(address(this), address(lendingPool)) == 0) {
-        require(IERC20(asset).approve(address(lendingPool), uint256(-1)), "Failed to approve");
+        IERC20(asset).safeApprove(address(lendingPool), uint256(-1));
     }
 
     uint256 deposited = 0;
