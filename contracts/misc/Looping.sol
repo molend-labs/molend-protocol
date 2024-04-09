@@ -9,12 +9,16 @@ import {ILendingPoolAddressesProvider} from '../interfaces/ILendingPoolAddresses
 import {IWETH} from "./interfaces/IWETH.sol";
 
 contract Looping {
+  struct InternalLoopVariables {
+    uint256 deposited;
+    uint256 borrowed;
+  }
+
   using SafeERC20 for IERC20;
   using SafeMath for uint256;
   uint256 public constant RATIO_DIVISOR = 10000;
 
   ILendingPoolAddressesProvider public immutable ADDRESSES_PROVIDER;
-  ILendingPool public immutable LENDING_POOL;
   IWETH internal immutable WETH;
 
   event Loop (address user, address asset, uint256 principal, uint256 deposited, uint256 borrowed, uint256 borrowRatio, uint256 loopCount);
@@ -22,8 +26,11 @@ contract Looping {
 
   constructor(ILendingPoolAddressesProvider provider, IWETH weth) public {
     ADDRESSES_PROVIDER = provider;
-    LENDING_POOL = ILendingPool(provider.getLendingPool());
     WETH = weth;
+  }
+
+  function lendingPool() public view returns (ILendingPool) {
+    return ILendingPool(ADDRESSES_PROVIDER.getLendingPool());
   }
 
   function getWETHAddress() external view returns (address) {
@@ -41,8 +48,8 @@ contract Looping {
 
     IERC20(asset).safeTransferFrom(user, address(this), amount);
 
-    (uint256 deposited, uint256 borrowed) = internalLoop(user, asset, amount, borrowRatio, loopCount);
-    emit Loop(user, asset, amount, deposited, borrowed, borrowRatio, loopCount);
+    InternalLoopVariables memory variables = internalLoop(user, asset, amount, borrowRatio, loopCount);
+    emit Loop(user, asset, amount, variables.deposited, variables.borrowed, borrowRatio, loopCount);
   }
 
   function loopETH(
@@ -56,8 +63,8 @@ contract Looping {
     require(amount > 0, "Need to attach Ether");
     WETH.deposit{value: amount}();
 
-    (uint256 deposited, uint256 borrowed) = internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
-    emit LoopETH(user, amount, deposited, borrowed, borrowRatio, loopCount);
+    InternalLoopVariables memory variables = internalLoop(user, address(WETH), amount, borrowRatio, loopCount);
+    emit LoopETH(user, amount, variables.deposited, variables.borrowed, borrowRatio, loopCount);
   }
 
   function internalLoop(
@@ -66,25 +73,29 @@ contract Looping {
     uint256 amount,
     uint256 borrowRatio,
     uint256 loopCount
-  ) internal returns (uint256, uint256) {
-    if (IERC20(asset).allowance(address(this), address(LENDING_POOL)) == 0) {
-        require(IERC20(asset).approve(address(LENDING_POOL), uint256(-1)), "Failed to approve");
+  ) internal returns (InternalLoopVariables memory) {
+    ILendingPool lendingPool = lendingPool();
+
+    if (IERC20(asset).allowance(address(this), address(lendingPool)) == 0) {
+        IERC20(asset).safeApprove(address(lendingPool), uint256(-1));
     }
 
-    uint256 deposited = 0;
-    uint256 borrowed = 0;
+    InternalLoopVariables memory variables = InternalLoopVariables({
+      deposited: 0,
+      borrowed: 0
+    });
 
     for (uint256 i = 0; i < loopCount; i++) {
-      LENDING_POOL.deposit(asset, amount, user, 0);
-      deposited += amount;
+      lendingPool.deposit(asset, amount, user, 0);
+      variables.deposited += amount;
       amount = amount.mul(borrowRatio).div(RATIO_DIVISOR);
-      LENDING_POOL.borrow(asset, amount, 2, 0, user);
-      borrowed += amount;
+      lendingPool.borrow(asset, amount, 2, 0, user);
+      variables.borrowed += amount;
     }
 
-    LENDING_POOL.deposit(asset, amount, user, 0);
-    deposited += amount;
+    lendingPool.deposit(asset, amount, user, 0);
+    variables.deposited += amount;
 
-    return (deposited, borrowed);
+    return variables;
   }
 }
