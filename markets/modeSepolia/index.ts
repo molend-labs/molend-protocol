@@ -4,6 +4,7 @@ import { IModeConfiguration, eModeNetwork } from '../../helpers/types';
 import { CommonsConfig } from './commons';
 import {
   strategyEZETH,
+  strategyMBTC,
   strategySTONE,
   strategyUSDC,
   strategyUSDT,
@@ -26,6 +27,7 @@ export const ModeSepoliaConfig: IModeConfiguration = {
     WSTETH: strategyWSTETH,
     STONE: strategySTONE,
     EZETH: strategyEZETH,
+    MBTC: strategyMBTC,
   },
   // TODO mode
   ReserveAssets: {
@@ -37,6 +39,7 @@ export const ModeSepoliaConfig: IModeConfiguration = {
       WSTETH: '0xE00B04ae0d63B8D304E1C849489B013AD559F050',
       STONE: '0xd3284Df9FE2536AFaC2b1Bd57FA66b2c45eA1B74',
       EZETH: '0x04a85a36496Dbc3681500c0bE81c8C176b6e86dd',
+      MBTC: '0x080268547BBDd7553a68812783eb08EC29733220',
     },
   },
 };
