@@ -68,7 +68,7 @@ export const rateStrategyEZETH: IInterestRateStrategyParams = {
   stableRateSlope2: '0',
 };
 
-// EZETH
+// MBTC
 export const rateStrategyMBTC: IInterestRateStrategyParams = {
   name: "rateStrategyMBTC",
   optimalUtilizationRate: new BigNumber(0.3).multipliedBy(oneRay).toFixed(),

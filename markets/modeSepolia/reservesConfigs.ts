@@ -86,8 +86,8 @@ export const strategyEZETH: IReserveParams = {
 export const strategyMBTC: IReserveParams = {
   strategy: rateStrategyMBTC,
   baseLTVAsCollateral: '0',
-  liquidationThreshold: '500',
-  liquidationBonus: '11500',
+  liquidationThreshold: '0',
+  liquidationBonus: '0',
   borrowingEnabled: false,
   stableBorrowRateEnabled: false,
   reserveDecimals: '18',
