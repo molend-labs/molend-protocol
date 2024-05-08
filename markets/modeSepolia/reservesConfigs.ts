@@ -9,6 +9,7 @@ import {
   rateStrategySTONE,
   rateStrategyEZETH,
   rateStrategyMBTC,
+  rateStrategyMODE,
 } from './rateStrategies';
 
 export const strategyUSDC: IReserveParams = {
@@ -89,6 +90,18 @@ export const strategyMBTC: IReserveParams = {
   liquidationThreshold: '0',
   liquidationBonus: '0',
   borrowingEnabled: false,
+  stableBorrowRateEnabled: false,
+  reserveDecimals: '18',
+  aTokenImpl: eContractid.AToken,
+  reserveFactor: '6500',
+};
+
+export const strategyMODE: IReserveParams = {
+  strategy: rateStrategyMODE,
+  baseLTVAsCollateral: '5000',
+  liquidationThreshold: '5500',
+  liquidationBonus: '11500',
+  borrowingEnabled: true,
   stableBorrowRateEnabled: false,
   reserveDecimals: '18',
   aTokenImpl: eContractid.AToken,

@@ -273,6 +273,7 @@ export interface iAssetBase<T> {
   STONE?: T;
   EZETH?: T;
   MBTC?: T;
+  MODE?: T;
 }
 
 export type iAssetsWithoutETH<T> = Omit<iAssetBase<T>, 'ETH'>;
@@ -343,7 +344,7 @@ export type iAvalanchePoolAssets<T> = Pick<
 
 export type iModePoolAssets<T> = Pick<
   iAssetsWithoutUSD<T>,
-  'WETH' | 'USDC' | 'USDT' | 'WSTETH' | 'STONE' | 'EZETH' | 'MBTC'
+  'WETH' | 'USDC' | 'USDT' | 'WSTETH' | 'STONE' | 'EZETH' | 'MBTC' | 'MODE'
 >;
 
 export type iMultiPoolsAssets<T> = iAssetCommon<T> | iAavePoolAssets<T>;
