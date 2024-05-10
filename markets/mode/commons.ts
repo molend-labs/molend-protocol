@@ -124,6 +124,7 @@ export const CommonsConfig: ICommonConfiguration = {
       STONE: '0x5522CAA025EC6eB6540E734699FBfae68F1CD014',
       EZETH: '0x6777f9Eb9A4b57CfA7dDA7484213AA46c66390FA',
       MBTC: '0x29050cdde58e0f3B0E82809AF10466b1083BBDa7',
+      MODE: '0x143dDb53eba934f4774b5c8283B2C65Aff59C10f',
     },
   },
   ReserveAssets: {
