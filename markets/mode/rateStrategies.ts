@@ -67,3 +67,14 @@ export const rateStrategyMBTC: IInterestRateStrategyParams = {
   stableRateSlope1: '0',
   stableRateSlope2: '0',
 };
+
+// MODE 
+export const rateStrategyMODE: IInterestRateStrategyParams = {
+  name: "rateStrategyMODE",
+  optimalUtilizationRate: new BigNumber(0.2).multipliedBy(oneRay).toFixed(),
+  baseVariableBorrowRate: new BigNumber(0).multipliedBy(oneRay).toFixed(),
+  variableRateSlope1: new BigNumber(0.1).multipliedBy(oneRay).toFixed(),
+  variableRateSlope2: new BigNumber(1).multipliedBy(oneRay).toFixed(),
+  stableRateSlope1: '0',
+  stableRateSlope2: '0',
+};

@@ -5,6 +5,7 @@ import { CommonsConfig } from './commons';
 import {
   strategyEZETH,
   strategyMBTC,
+  strategyMODE,
   strategySTONE,
   strategyUSDC,
   strategyUSDT,
@@ -28,6 +29,7 @@ export const ModeSepoliaConfig: IModeConfiguration = {
     STONE: strategySTONE,
     EZETH: strategyEZETH,
     MBTC: strategyMBTC,
+    MODE: strategyMODE,
   },
   // TODO mode
   ReserveAssets: {
@@ -40,6 +42,7 @@ export const ModeSepoliaConfig: IModeConfiguration = {
       STONE: '0xd3284Df9FE2536AFaC2b1Bd57FA66b2c45eA1B74',
       EZETH: '0x04a85a36496Dbc3681500c0bE81c8C176b6e86dd',
       MBTC: '0x080268547BBDd7553a68812783eb08EC29733220',
+      MODE: '0xFf2a71BC057E6B7DA878f5B84C7700d7110B8412',
     },
   },
 };
